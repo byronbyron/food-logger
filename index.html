@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food log</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f4;
+    --bg-tertiary: #eeede9;
+    --text: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-tertiary: #9a9a9a;
+    --border: rgba(0,0,0,0.1);
+    --border-md: rgba(0,0,0,0.18);
+    --border-strong: rgba(0,0,0,0.28);
+    --teal: #1D9E75;
+    --teal-dark: #0F6E56;
+    --teal-darkest: #085041;
+    --teal-light: #E1F5EE;
+    --teal-mid: #9FE1CB;
+    --teal-muted: #5DCAA5;
+    --coral-light: #FAECE7;
+    --coral-dark: #993C1D;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1b;
+      --bg-secondary: #252524;
+      --bg-tertiary: #2e2e2c;
+      --text: #f0efeb;
+      --text-secondary: #a8a8a4;
+      --text-tertiary: #6e6e6a;
+      --border: rgba(255,255,255,0.1);
+      --border-md: rgba(255,255,255,0.18);
+      --border-strong: rgba(255,255,255,0.28);
+      --teal-light: #0a2e22;
+      --teal-mid: #1a5c42;
+      --teal-muted: #2a8a62;
+    }
+  }
+
+  body {
+    font-family: var(--font);
+    color: var(--text);
+    background: var(--bg-tertiary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .app {
+    max-width: 620px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-radius: 16px;
+    border: 0.5px solid var(--border);
+    padding: 1.75rem;
+  }
+
+  .app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .app-title {
+    font-size: 18px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+  }
+
+  .app-title i { font-size: 20px; color: var(--teal-muted); }
+
+  .export-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 0.5px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 7px 13px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    transition: background 0.15s, color 0.15s;
+  }
+  .export-btn:hover { background: var(--bg-secondary); color: var(--text); }
+
+  .day-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 8px 12px;
+  }
+
+  .day-nav-arrow {
+    background: none;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 5px 9px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-family: var(--font);
+    transition: background 0.15s, color 0.15s;
+  }
+  .day-nav-arrow:hover { background: var(--bg); color: var(--text); }
+
+  .day-label {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .today-btn {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 5px 11px;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: border-color 0.15s;
+  }
+  .today-btn:hover { border-color: var(--border-md); }
+
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .quick-section { margin-bottom: 1.5rem; }
+
+  .quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .quick-btn {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 14px 7px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .quick-btn:hover { border-color: var(--border-strong); background: var(--bg-secondary); }
+
+  .qb-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--teal-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .qb-icon i { font-size: 12px; color: var(--teal-dark); }
+
+  .qb-edit {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-left: 2px;
+    display: flex;
+    align-items: center;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+  }
+  .quick-btn:hover .qb-edit { opacity: 1; }
+
+  .add-quick-btn {
+    background: none;
+    border: 0.5px dashed var(--border-md);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .add-quick-btn:hover { background: var(--bg-secondary); color: var(--text-secondary); }
+
+  .form-card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .form-grid .field:first-child { grid-column: 1 / -1; }
+  }
+
+  .field label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    display: block;
+    margin-bottom: 5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .field input {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px 11px;
+    border: 0.5px solid var(--border-md);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text);
+    font-family: var(--font);
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.14);
+    background: var(--bg);
+  }
+
+  .form-actions { display: flex; gap: 8px; }
+
+  .btn-primary {
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 9px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .btn-primary i { font-size: 15px; }
+
+  .btn-secondary {
+    background: none;
+    border: 0.5px solid var(--border-md);
+    border-radius: var(--radius-md);
+    padding: 9px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    transition: background 0.15s;
+  }
+  .btn-secondary:hover { background: var(--bg-secondary); }
+
+  .log-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .log-header .eyebrow { margin-bottom: 0; }
+
+  .count-pill {
+    font-size: 11px;
+    color: var(--teal-dark);
+    background: var(--teal-light);
+    border-radius: 10px;
+    padding: 2px 9px;
+    font-weight: 500;
+    display: none;
+  }
+
+  .log-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    border: 0.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .log-empty i { font-size: 28px; display: block; margin: 0 auto 10px; opacity: 0.35; }
+
+  .log-list {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .log-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--bg);
+    transition: background 0.1s;
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry:hover { background: var(--bg-secondary); }
+
+  .entry-time {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    min-width: 40px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  .entry-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal-mid);
+    flex-shrink: 0;
+  }
+
+  .entry-food { flex: 1; font-size: 14px; color: var(--text); }
+
+  .entry-qty {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  .entry-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    padding: 4px 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+  }
+  .log-entry:hover .entry-delete { opacity: 1; }
+  .entry-delete:hover { color: var(--coral-dark); background: var(--coral-light); }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg);
+    border: 0.5px solid var(--border-md);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .modal-header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--teal-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .modal-header-icon i { font-size: 16px; color: var(--teal-dark); }
+
+  .modal h3 { font-size: 15px; font-weight: 500; color: var(--text); }
+
+  .modal .field { margin-bottom: 12px; }
+
+  .modal-actions { display: flex; gap: 8px; margin-top: 1.25rem; }
+  .modal-actions .btn-primary { flex: 1; justify-content: center; }
+  .modal-actions .btn-secondary { flex: 1; text-align: center; }
+
+  .modal-delete {
+    margin-top: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-md);
+    font-family: var(--font);
+    transition: background 0.15s, color 0.15s;
+    display: none;
+  }
+  .modal-delete:hover { background: var(--coral-light); color: var(--coral-dark); }
+
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--teal-darkest);
+    color: var(--teal-mid);
+    font-size: 13px;
+    font-family: var(--font);
+    padding: 9px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="app" role="main">
+  <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Food logger</h1>
+
+  <div class="app-header">
+    <div class="app-title">
+      <i class="ti ti-salad" aria-hidden="true"></i>
+      Food log
+    </div>
+    <button class="export-btn" id="export-btn">
+      <i class="ti ti-download" aria-hidden="true"></i>
+      Export CSV
+    </button>
+  </div>
+
+  <div class="day-nav">
+    <button class="day-nav-arrow" id="prev-day" aria-label="Previous day"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+    <span class="day-label" id="day-label"></span>
+    <button class="day-nav-arrow" id="next-day" aria-label="Next day"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+    <button class="today-btn" id="today-btn">Today</button>
+  </div>
+
+  <div class="quick-section">
+    <div class="eyebrow">Quick add</div>
+    <div class="quick-buttons" id="quick-buttons"></div>
+  </div>
+
+  <div class="form-card">
+    <div class="eyebrow" style="margin-bottom:14px">Log food</div>
+    <div class="form-grid">
+      <div class="field">
+        <label for="entry-time">Time</label>
+        <input type="time" id="entry-time">
+      </div>
+      <div class="field">
+        <label for="entry-food">Food</label>
+        <input type="text" id="entry-food" placeholder="e.g. porridge">
+      </div>
+      <div class="field">
+        <label for="entry-qty">Quantity</label>
+        <input type="text" id="entry-qty" placeholder="e.g. 1 bowl">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-primary" id="log-btn"><i class="ti ti-plus" aria-hidden="true"></i> Log entry</button>
+      <button class="btn-secondary" id="clear-btn">Clear</button>
+    </div>
+  </div>
+
+  <div class="log-section">
+    <div class="log-header">
+      <span class="eyebrow" id="log-label">Log</span>
+      <span class="count-pill" id="count-pill"></span>
+    </div>
+    <div id="log-list"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-icon"><i class="ti ti-bookmark" aria-hidden="true"></i></div>
+      <h3 id="modal-title">New quick-add button</h3>
+    </div>
+    <div class="field">
+      <label for="qb-label">Button label</label>
+      <input type="text" id="qb-label" placeholder="e.g. Morning coffee">
+    </div>
+    <div class="field">
+      <label for="qb-food">Food</label>
+      <input type="text" id="qb-food" placeholder="e.g. Coffee">
+    </div>
+    <div class="field">
+      <label for="qb-qty">Quantity</label>
+      <input type="text" id="qb-qty" placeholder="e.g. 1 mug">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modal-cancel">Cancel</button>
+      <button class="btn-primary" id="modal-save" style="justify-content:center">Save</button>
+    </div>
+    <button class="modal-delete" id="modal-delete"><i class="ti ti-trash" aria-hidden="true" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i>Delete this button</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <i class="ti ti-check" aria-hidden="true"></i>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+(function(){
+  let currentDate = new Date(); currentDate.setHours(0,0,0,0);
+  let editingQuickIdx = null;
+
+  function dateKey(d){ return d.toISOString().split('T')[0]; }
+  function formatDay(d){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diff = (d - today) / 86400000;
+    if(diff===0) return 'Today';
+    if(diff===-1) return 'Yesterday';
+    if(diff===1) return 'Tomorrow';
+    return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  }
+  function nowTime(){ const n=new Date(); return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0'); }
+  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function getStore(k,fb){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fb; }catch(e){ return fb; } }
+  function setStore(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  function getLogs(){ return getStore('fl_logs',{}); }
+  function getDayLogs(d){ return getLogs()[dateKey(d)]||[]; }
+  function saveDayLogs(d,e){ const a=getLogs(); a[dateKey(d)]=e; setStore('fl_logs',a); }
+  function getQuickButtons(){ return getStore('fl_quick',[]); }
+  function saveQuickButtons(b){ setStore('fl_quick',b); }
+
+  function showToast(msg){
+    const t=document.getElementById('toast');
+    document.getElementById('toast-msg').textContent=msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  function updateDayLabel(){
+    const label = formatDay(currentDate);
+    document.getElementById('day-label').textContent = label;
+    document.getElementById('log-label').textContent = label === 'Today' ? "Today's log" : label + "'s log";
+  }
+
+  function renderLog(){
+    const entries = getDayLogs(currentDate);
+    const pill = document.getElementById('count-pill');
+    const list = document.getElementById('log-list');
+    if(entries.length===0){
+      pill.style.display='none';
+      list.innerHTML='<div class="log-empty"><i class="ti ti-bowl" aria-hidden="true"></i>Nothing logged yet — add an entry above</div>';
+      return;
+    }
+    pill.style.display='inline-block';
+    pill.textContent=entries.length+(entries.length===1?' entry':' entries');
+    list.innerHTML='<div class="log-list">'+entries.map((e,i)=>`
+      <div class="log-entry">
+        <span class="entry-time">${esc(e.time)||'--:--'}</span>
+        <span class="entry-dot"></span>
+        <span class="entry-food">${esc(e.food)}</span>
+        <span class="entry-qty">${esc(e.qty)}</span>
+        <button class="entry-delete" data-idx="${i}" aria-label="Remove ${esc(e.food)}"><i class="ti ti-x" style="font-size:14px" aria-hidden="true"></i></button>
+      </div>`).join('')+'</div>';
+    list.querySelectorAll('.entry-delete').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const e=getDayLogs(currentDate); e.splice(+btn.dataset.idx,1); saveDayLogs(currentDate,e); renderLog();
+      });
+    });
+  }
+
+  function renderQuickButtons(){
+    const btns=getQuickButtons();
+    const container=document.getElementById('quick-buttons');
+    container.innerHTML='';
+    btns.forEach((b,i)=>{
+      const el=document.createElement('button');
+      el.className='quick-btn';
+      el.innerHTML=`<span class="qb-icon"><i class="ti ti-bolt" aria-hidden="true"></i></span>${esc(b.label)}<span class="qb-edit"><i class="ti ti-pencil" aria-hidden="true"></i></span>`;
+      el.addEventListener('click',()=>{
+        document.getElementById('entry-food').value=b.food;
+        document.getElementById('entry-qty').value=b.qty;
+        if(!document.getElementById('entry-time').value) document.getElementById('entry-time').value=nowTime();
+        document.getElementById('entry-food').focus();
+      });
+      el.querySelector('.qb-edit').addEventListener('click',ev=>{ ev.stopPropagation(); openModal(i); });
+      container.appendChild(el);
+    });
+    const addEl=document.createElement('button');
+    addEl.className='add-quick-btn';
+    addEl.innerHTML='<i class="ti ti-plus" aria-hidden="true"></i> New button';
+    addEl.addEventListener('click',()=>openModal(null));
+    container.appendChild(addEl);
+  }
+
+  function openModal(idx){
+    editingQuickIdx=idx;
+    const delBtn=document.getElementById('modal-delete');
+    if(idx!==null){
+      const b=getQuickButtons()[idx];
+      document.getElementById('modal-title').textContent='Edit quick-add button';
+      document.getElementById('qb-label').value=b.label;
+      document.getElementById('qb-food').value=b.food;
+      document.getElementById('qb-qty').value=b.qty;
+      delBtn.style.display='block';
+    } else {
+      document.getElementById('modal-title').textContent='New quick-add button';
+      document.getElementById('qb-label').value='';
+      document.getElementById('qb-food').value='';
+      document.getElementById('qb-qty').value='';
+      delBtn.style.display='none';
+    }
+    document.getElementById('modal').classList.add('open');
+    document.getElementById('qb-label').focus();
+  }
+
+  function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+  document.getElementById('modal-save').addEventListener('click',()=>{
+    const label=document.getElementById('qb-label').value.trim();
+    const food=document.getElementById('qb-food').value.trim();
+    const qty=document.getElementById('qb-qty').value.trim();
+    if(!label||!food) return;
+    const btns=getQuickButtons();
+    if(editingQuickIdx!==null){ btns[editingQuickIdx]={label,food,qty}; } else { btns.push({label,food,qty}); }
+    saveQuickButtons(btns); renderQuickButtons(); closeModal();
+    showToast(editingQuickIdx!==null ? 'Button updated' : 'Button added');
+  });
+
+  document.getElementById('modal-delete').addEventListener('click',()=>{
+    if(editingQuickIdx===null) return;
+    const btns=getQuickButtons(); btns.splice(editingQuickIdx,1); saveQuickButtons(btns); renderQuickButtons(); closeModal();
+    showToast('Button removed');
+  });
+
+  document.getElementById('log-btn').addEventListener('click',()=>{
+    const food=document.getElementById('entry-food').value.trim();
+    if(!food){ document.getElementById('entry-food').focus(); return; }
+    const entry={ time: document.getElementById('entry-time').value||nowTime(), food, qty: document.getElementById('entry-qty').value.trim()||'—' };
+    const entries=getDayLogs(currentDate); entries.push(entry);
+    entries.sort((a,b)=>a.time.localeCompare(b.time));
+    saveDayLogs(currentDate,entries);
+    document.getElementById('entry-food').value='';
+    document.getElementById('entry-qty').value='';
+    document.getElementById('entry-time').value='';
+    renderLog();
+    document.getElementById('entry-food').focus();
+  });
+
+  document.getElementById('clear-btn').addEventListener('click',()=>{
+    document.getElementById('entry-food').value='';
+    document.getElementById('entry-qty').value='';
+    document.getElementById('entry-time').value='';
+  });
+
+  document.getElementById('prev-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()-1); updateDayLabel(); renderLog(); });
+  document.getElementById('next-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()+1); updateDayLabel(); renderLog(); });
+  document.getElementById('today-btn').addEventListener('click',()=>{ currentDate=new Date(); currentDate.setHours(0,0,0,0); updateDayLabel(); renderLog(); });
+
+  document.getElementById('export-btn').addEventListener('click',()=>{
+    const allLogs=getLogs();
+    const days=Object.keys(allLogs).sort();
+    if(days.length===0){ showToast('Nothing to export yet'); return; }
+    const rows=[['Date','Time','Food','Quantity']];
+    days.forEach(day=>{ (allLogs[day]||[]).forEach(e=>{ rows.push([day,e.time||'',e.food||'',e.qty||'']); }); });
+    const csv=rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='food-log.csv'; a.click();
+    URL.revokeObjectURL(url);
+    showToast('Exported food-log.csv');
+  });
+
+  ['entry-food','entry-qty','entry-time'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); });
+  });
+  ['qb-label','qb-food','qb-qty'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('modal-save').click(); });
+  });
+
+  document.getElementById('entry-time').value=nowTime();
+  updateDayLabel();
+  renderLog();
+  renderQuickButtons();
+})();
+</script>
+</body>
+</html>
