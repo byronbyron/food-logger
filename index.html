@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -483,8 +484,8 @@
       Food log
     </div>
     <button class="export-btn" id="export-btn">
-      <i class="ti ti-download" aria-hidden="true"></i>
-      Export CSV
+      <i class="ti ti-clipboard" aria-hidden="true"></i>
+      Copy CSV
     </button>
   </div>
 
@@ -721,15 +722,16 @@
   document.getElementById('export-btn').addEventListener('click',()=>{
     const allLogs=getLogs();
     const days=Object.keys(allLogs).sort();
-    if(days.length===0){ showToast('Nothing to export yet'); return; }
+    if(days.length===0){ showToast('Nothing to copy yet'); return; }
     const rows=[['Date','Time','Food','Quantity']];
     days.forEach(day=>{ (allLogs[day]||[]).forEach(e=>{ rows.push([day,e.time||'',e.food||'',e.qty||'']); }); });
     const csv=rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(',')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download='food-log.csv'; a.click();
-    URL.revokeObjectURL(url);
-    showToast('Exported food-log.csv');
+    navigator.clipboard.writeText(csv).then(()=>{
+      const btn=document.getElementById('export-btn');
+      btn.innerHTML='<i class="ti ti-clipboard-check" aria-hidden="true"></i> Copied!';
+      showToast('CSV copied to clipboard');
+      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-clipboard" aria-hidden="true"></i> Copy CSV'; },2000);
+    }).catch(()=>{ showToast('Copy failed — try again'); });
   });
 
   ['entry-food','entry-qty','entry-time'].forEach(id=>{
