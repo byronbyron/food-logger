@@ -500,7 +500,7 @@
   .toast {
     position: fixed; bottom: 1.5rem; left: 50%;
     transform: translateX(-50%);
-    background: var(--teal-darkest); color: var(--text);
+    background: var(--teal-darkest); color: var(--teal-mid);
     font-size: 13px; font-family: var(--font);
     padding: 9px 18px; border-radius: 20px;
     opacity: 0; transition: opacity 0.2s;
@@ -521,7 +521,6 @@
       <i class="ti ti-salad" aria-hidden="true"></i>
       Food log
     </div>
-
     <div class="header-actions">
       <button class="icon-btn" id="search-toggle-btn" aria-label="Search entries">
         <i class="ti ti-search" aria-hidden="true"></i> Search
@@ -987,18 +986,18 @@
     document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); });
   });
 
-  /* ── Copy CSV ── */
+  /* ── Copy day CSV ── */
   document.getElementById('export-btn').addEventListener('click',()=>{
-    const allLogs=getLogs();
-    const days=Object.keys(allLogs).sort();
-    if(days.length===0){ showToast('Nothing to copy yet'); return; }
+    const entries=getDayLogs(currentDate);
+    if(entries.length===0){ showToast('Nothing logged for this day'); return; }
+    const day=dateKey(currentDate);
     const rows=[['Date','Time','Meal','Food','Quantity','Notes']];
-    days.forEach(day=>{ (allLogs[day]||[]).forEach(e=>{ rows.push([day,e.time||'',e.meal||'',e.food||'',e.qty||'',e.notes||'']); }); });
+    entries.forEach(e=>{ rows.push([day,e.time||'',e.meal||'',e.food||'',e.qty||'',e.notes||'']); });
     const csv=rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(',')).join('\n');
     navigator.clipboard.writeText(csv).then(()=>{
       const btn=document.getElementById('export-btn');
       btn.innerHTML='<i class="ti ti-clipboard-check" aria-hidden="true"></i> Copied!';
-      showToast('CSV copied to clipboard');
+      showToast('Day log copied to clipboard');
       setTimeout(()=>{ btn.innerHTML='<i class="ti ti-clipboard" aria-hidden="true"></i> Copy CSV'; },2000);
     }).catch(()=>{ showToast('Copy failed — try again'); });
   });
