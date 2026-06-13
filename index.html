@@ -29,6 +29,14 @@
     --radius-md: 8px;
     --radius-lg: 12px;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --meal-breakfast: #F59E0B;
+    --meal-breakfast-bg: #FFFBEB;
+    --meal-lunch: #3B82F6;
+    --meal-lunch-bg: #EFF6FF;
+    --meal-dinner: #8B5CF6;
+    --meal-dinner-bg: #F5F3FF;
+    --meal-snack: #EC4899;
+    --meal-snack-bg: #FDF2F8;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -45,6 +53,10 @@
       --teal-light: #0a2e22;
       --teal-mid: #1a5c42;
       --teal-muted: #2a8a62;
+      --meal-breakfast-bg: #2a2000;
+      --meal-lunch-bg: #0a1a2e;
+      --meal-dinner-bg: #1a0a2e;
+      --meal-snack-bg: #2e0a1a;
     }
   }
 
@@ -57,7 +69,7 @@
   }
 
   .app {
-    max-width: 620px;
+    max-width: 640px;
     margin: 0 auto;
     background: var(--bg);
     border-radius: 16px;
@@ -65,6 +77,7 @@
     padding: 1.75rem;
   }
 
+  /* ── Header ── */
   .app-header {
     display: flex;
     align-items: center;
@@ -72,8 +85,8 @@
     margin-bottom: 1.75rem;
     padding-bottom: 1rem;
     border-bottom: 0.5px solid var(--border);
+    gap: 10px;
   }
-
   .app-title {
     font-size: 18px;
     font-weight: 500;
@@ -82,10 +95,9 @@
     gap: 10px;
     color: var(--text);
   }
-
   .app-title i { font-size: 20px; color: var(--teal-muted); }
-
-  .export-btn {
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -98,9 +110,12 @@
     color: var(--text-secondary);
     font-family: var(--font);
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
   }
-  .export-btn:hover { background: var(--bg-secondary); color: var(--text); }
+  .icon-btn:hover { background: var(--bg-secondary); color: var(--text); }
+  .icon-btn.active { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-mid); }
 
+  /* ── Day nav ── */
   .day-nav {
     display: flex;
     align-items: center;
@@ -111,7 +126,6 @@
     border-radius: var(--radius-lg);
     padding: 8px 12px;
   }
-
   .day-nav-arrow {
     background: none;
     border: 0.5px solid var(--border);
@@ -126,15 +140,7 @@
     transition: background 0.15s, color 0.15s;
   }
   .day-nav-arrow:hover { background: var(--bg); color: var(--text); }
-
-  .day-label {
-    flex: 1;
-    text-align: center;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
+  .day-label { flex: 1; text-align: center; font-size: 15px; font-weight: 500; color: var(--text); }
   .today-btn {
     font-size: 12px;
     color: var(--text-secondary);
@@ -148,6 +154,7 @@
   }
   .today-btn:hover { border-color: var(--border-md); }
 
+  /* ── Eyebrow ── */
   .eyebrow {
     font-size: 10px;
     font-weight: 500;
@@ -157,10 +164,9 @@
     margin-bottom: 10px;
   }
 
+  /* ── Quick add ── */
   .quick-section { margin-bottom: 1.5rem; }
-
   .quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-
   .quick-btn {
     background: var(--bg);
     border: 0.5px solid var(--border);
@@ -176,30 +182,19 @@
     transition: border-color 0.15s, background 0.15s;
   }
   .quick-btn:hover { border-color: var(--border-strong); background: var(--bg-secondary); }
-
   .qb-icon {
-    width: 22px;
-    height: 22px;
+    width: 22px; height: 22px;
     border-radius: 50%;
     background: var(--teal-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .qb-icon i { font-size: 12px; color: var(--teal-dark); }
-
   .qb-edit {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-left: 2px;
-    display: flex;
-    align-items: center;
-    opacity: 0.4;
-    transition: opacity 0.15s;
+    font-size: 11px; color: var(--text-tertiary);
+    margin-left: 2px; display: flex; align-items: center;
+    opacity: 0.4; transition: opacity 0.15s;
   }
   .quick-btn:hover .qb-edit { opacity: 1; }
-
   .add-quick-btn {
     background: none;
     border: 0.5px dashed var(--border-md);
@@ -209,13 +204,12 @@
     cursor: pointer;
     color: var(--text-tertiary);
     font-family: var(--font);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; align-items: center; gap: 6px;
     transition: background 0.15s, color 0.15s;
   }
   .add-quick-btn:hover { background: var(--bg-secondary); color: var(--text-secondary); }
 
+  /* ── Form ── */
   .form-card {
     background: var(--bg);
     border: 0.5px solid var(--border);
@@ -223,30 +217,30 @@
     padding: 1.25rem;
     margin-bottom: 1.5rem;
   }
-
   .form-grid {
     display: grid;
-    grid-template-columns: 110px 1fr 1fr;
+    grid-template-columns: 100px 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-bottom: 12px;
   }
-
   @media (max-width: 480px) {
     .form-grid { grid-template-columns: 1fr 1fr; }
     .form-grid .field:first-child { grid-column: 1 / -1; }
+    .form-grid-2 { grid-template-columns: 1fr; }
   }
-
   .field label {
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 11px; font-weight: 500;
     color: var(--text-tertiary);
-    display: block;
-    margin-bottom: 5px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    display: block; margin-bottom: 5px;
+    letter-spacing: 0.04em; text-transform: uppercase;
   }
-
-  .field input {
+  .field input, .field textarea, .field select {
     width: 100%;
     font-size: 14px;
     padding: 8px 11px;
@@ -257,216 +251,261 @@
     font-family: var(--font);
     transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
   }
-  .field input:focus {
+  .field textarea { resize: none; height: 56px; line-height: 1.4; }
+  .field input:focus, .field textarea:focus, .field select:focus {
     outline: none;
     border-color: var(--teal);
     box-shadow: 0 0 0 3px rgba(29,158,117,0.14);
     background: var(--bg);
   }
 
-  .form-actions { display: flex; gap: 8px; }
-
-  .btn-primary {
-    background: var(--teal);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-md);
-    padding: 9px 20px;
-    font-size: 14px;
-    font-weight: 500;
+  /* Meal tag selector */
+  .meal-selector { display: flex; gap: 6px; flex-wrap: wrap; }
+  .meal-opt {
+    border: 0.5px solid var(--border-md);
+    border-radius: 20px;
+    padding: 6px 13px;
+    font-size: 12px;
     cursor: pointer;
     font-family: var(--font);
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .meal-opt:hover { border-color: var(--border-strong); }
+  .meal-opt.sel-breakfast { background: var(--meal-breakfast-bg); color: var(--meal-breakfast); border-color: var(--meal-breakfast); font-weight: 500; }
+  .meal-opt.sel-lunch { background: var(--meal-lunch-bg); color: var(--meal-lunch); border-color: var(--meal-lunch); font-weight: 500; }
+  .meal-opt.sel-dinner { background: var(--meal-dinner-bg); color: var(--meal-dinner); border-color: var(--meal-dinner); font-weight: 500; }
+  .meal-opt.sel-snack { background: var(--meal-snack-bg); color: var(--meal-snack); border-color: var(--meal-snack); font-weight: 500; }
+
+  .form-actions { display: flex; gap: 8px; }
+  .btn-primary {
+    background: var(--teal); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    padding: 9px 20px; font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: var(--font);
+    display: flex; align-items: center; gap: 7px;
     transition: background 0.15s;
   }
   .btn-primary:hover { background: var(--teal-dark); }
   .btn-primary i { font-size: 15px; }
-
   .btn-secondary {
     background: none;
     border: 0.5px solid var(--border-md);
     border-radius: var(--radius-md);
-    padding: 9px 14px;
-    font-size: 14px;
-    cursor: pointer;
-    color: var(--text-secondary);
+    padding: 9px 14px; font-size: 14px;
+    cursor: pointer; color: var(--text-secondary);
     font-family: var(--font);
     transition: background 0.15s;
   }
   .btn-secondary:hover { background: var(--bg-secondary); }
 
-  .log-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
+  /* ── Log list ── */
+  .log-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
   .log-header .eyebrow { margin-bottom: 0; }
-
   .count-pill {
-    font-size: 11px;
-    color: var(--teal-dark);
+    font-size: 11px; color: var(--teal-dark);
     background: var(--teal-light);
-    border-radius: 10px;
-    padding: 2px 9px;
-    font-weight: 500;
-    display: none;
+    border-radius: 10px; padding: 2px 9px;
+    font-weight: 500; display: none;
   }
-
   .log-empty {
-    text-align: center;
-    padding: 2.5rem 1rem;
-    color: var(--text-tertiary);
-    font-size: 14px;
+    text-align: center; padding: 2.5rem 1rem;
+    color: var(--text-tertiary); font-size: 14px;
     border: 0.5px dashed var(--border);
     border-radius: var(--radius-lg);
   }
   .log-empty i { font-size: 28px; display: block; margin: 0 auto 10px; opacity: 0.35; }
+
+  .meal-group { margin-bottom: 1rem; }
+  .meal-group-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 2px; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .meal-group-label::after {
+    content: ''; flex: 1;
+    height: 0.5px; background: var(--border);
+  }
+  .meal-group-label.lbl-breakfast { color: var(--meal-breakfast); }
+  .meal-group-label.lbl-lunch { color: var(--meal-lunch); }
+  .meal-group-label.lbl-dinner { color: var(--meal-dinner); }
+  .meal-group-label.lbl-snack { color: var(--meal-snack); }
+  .meal-group-label.lbl-other { color: var(--text-tertiary); }
 
   .log-list {
     border: 0.5px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
   }
-
   .log-entry {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 14px;
+    display: flex; align-items: flex-start;
+    gap: 10px; padding: 10px 14px;
     border-bottom: 0.5px solid var(--border);
     background: var(--bg);
     transition: background 0.1s;
   }
   .log-entry:last-child { border-bottom: none; }
   .log-entry:hover { background: var(--bg-secondary); }
-
   .entry-time {
-    font-size: 12px;
-    color: var(--text-tertiary);
-    min-width: 40px;
-    font-variant-numeric: tabular-nums;
-    font-weight: 500;
+    font-size: 12px; color: var(--text-tertiary);
+    min-width: 40px; font-variant-numeric: tabular-nums;
+    font-weight: 500; padding-top: 2px;
   }
-
   .entry-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--teal-mid);
-    flex-shrink: 0;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal-mid); flex-shrink: 0; margin-top: 6px;
   }
-
-  .entry-food { flex: 1; font-size: 14px; color: var(--text); }
-
+  .entry-body { flex: 1; min-width: 0; }
+  .entry-food { font-size: 14px; color: var(--text); }
+  .entry-notes {
+    font-size: 12px; color: var(--text-tertiary);
+    margin-top: 2px; line-height: 1.4;
+    white-space: pre-wrap; word-break: break-word;
+  }
   .entry-qty {
-    font-size: 12px;
-    color: var(--text-secondary);
+    font-size: 12px; color: var(--text-secondary);
     background: var(--bg-secondary);
-    border-radius: 10px;
-    padding: 3px 10px;
-    white-space: nowrap;
+    border-radius: 10px; padding: 3px 10px;
+    white-space: nowrap; align-self: center; flex-shrink: 0;
   }
-
-  .entry-delete {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-tertiary);
-    padding: 4px 6px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.15s, background 0.15s, color 0.15s;
+  .meal-tag {
+    font-size: 10px; font-weight: 600;
+    border-radius: 10px; padding: 2px 8px;
+    letter-spacing: 0.04em; align-self: center; flex-shrink: 0;
   }
-  .log-entry:hover .entry-delete { opacity: 1; }
-  .entry-delete:hover { color: var(--coral-dark); background: var(--coral-light); }
+  .tag-breakfast { background: var(--meal-breakfast-bg); color: var(--meal-breakfast); }
+  .tag-lunch { background: var(--meal-lunch-bg); color: var(--meal-lunch); }
+  .tag-dinner { background: var(--meal-dinner-bg); color: var(--meal-dinner); }
+  .tag-snack { background: var(--meal-snack-bg); color: var(--meal-snack); }
 
+  .entry-actions { display: flex; gap: 2px; align-self: center; }
+  .entry-action-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-tertiary); padding: 4px 5px;
+    border-radius: 6px; display: flex; align-items: center;
+    opacity: 0; transition: opacity 0.15s, background 0.15s, color 0.15s;
+  }
+  .log-entry:hover .entry-action-btn { opacity: 1; }
+  .entry-action-btn:hover { background: var(--bg-tertiary); color: var(--text); }
+  .entry-action-btn.del:hover { color: var(--coral-dark); background: var(--coral-light); }
+  .entry-action-btn.dup:hover { color: var(--teal-dark); background: var(--teal-light); }
+
+  /* ── Search panel ── */
+  .search-panel { margin-bottom: 1.5rem; }
+  .search-input-wrap { position: relative; }
+  .search-input-wrap i {
+    position: absolute; left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary); font-size: 16px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%; font-size: 14px;
+    padding: 9px 11px 9px 36px;
+    border: 0.5px solid var(--border-md);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secondary);
+    color: var(--text); font-family: var(--font);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .search-input:focus {
+    outline: none; border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.14);
+    background: var(--bg);
+  }
+  .search-results { margin-top: 10px; }
+  .search-result-entry {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg); margin-bottom: 6px;
+    cursor: pointer; transition: background 0.1s;
+  }
+  .search-result-entry:hover { background: var(--bg-secondary); }
+  .search-date {
+    font-size: 11px; color: var(--text-tertiary);
+    min-width: 64px; font-weight: 500; padding-top: 2px;
+  }
+  .search-food { font-size: 14px; flex: 1; }
+  .search-empty { text-align: center; padding: 1.5rem; color: var(--text-tertiary); font-size: 14px; }
+
+  /* ── History panel ── */
+  .history-panel { margin-bottom: 1.5rem; }
+  .history-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .history-dow {
+    text-align: center; font-size: 10px;
+    color: var(--text-tertiary); padding-bottom: 4px;
+    font-weight: 500; letter-spacing: 0.04em;
+  }
+  .history-day {
+    aspect-ratio: 1; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; cursor: pointer;
+    background: var(--bg-secondary); color: var(--text-tertiary);
+    transition: background 0.15s, color 0.15s;
+    border: 0.5px solid transparent;
+    font-family: var(--font);
+  }
+  .history-day:hover { border-color: var(--border-md); color: var(--text); }
+  .history-day.has-entries { background: var(--teal-light); color: var(--teal-dark); font-weight: 500; }
+  .history-day.is-today { border-color: var(--teal); }
+  .history-day.is-current { background: var(--teal); color: #fff; font-weight: 600; border-color: var(--teal); }
+  .history-day.empty-slot { background: transparent; cursor: default; }
+
+  /* ── Modals ── */
   .modal-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0,0,0,0.4);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    padding: 1rem;
+    display: none; align-items: center; justify-content: center;
+    z-index: 100; padding: 1rem;
   }
   .modal-overlay.open { display: flex; }
-
   .modal {
     background: var(--bg);
     border: 0.5px solid var(--border-md);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    width: 100%;
-    max-width: 340px;
+    padding: 1.5rem; width: 100%; max-width: 380px;
   }
-
-  .modal-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1.25rem;
-  }
-
+  .modal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
   .modal-header-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    width: 32px; height: 32px; border-radius: 50%;
     background: var(--teal-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .modal-header-icon i { font-size: 16px; color: var(--teal-dark); }
-
   .modal h3 { font-size: 15px; font-weight: 500; color: var(--text); }
-
   .modal .field { margin-bottom: 12px; }
-
   .modal-actions { display: flex; gap: 8px; margin-top: 1.25rem; }
   .modal-actions .btn-primary { flex: 1; justify-content: center; }
   .modal-actions .btn-secondary { flex: 1; text-align: center; }
-
   .modal-delete {
-    margin-top: 10px;
-    width: 100%;
-    background: none;
-    border: none;
-    font-size: 12px;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    padding: 6px;
+    margin-top: 10px; width: 100%;
+    background: none; border: none;
+    font-size: 12px; color: var(--text-tertiary);
+    cursor: pointer; padding: 6px;
     border-radius: var(--radius-md);
     font-family: var(--font);
-    transition: background 0.15s, color 0.15s;
-    display: none;
+    transition: background 0.15s, color 0.15s; display: none;
   }
   .modal-delete:hover { background: var(--coral-light); color: var(--coral-dark); }
 
+  /* ── Toast ── */
   .toast {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
+    position: fixed; bottom: 1.5rem; left: 50%;
     transform: translateX(-50%);
-    background: var(--teal-darkest);
-    color: var(--text);
-    font-size: 13px;
-    font-family: var(--font);
-    padding: 9px 18px;
-    border-radius: 20px;
-    opacity: 0;
-    transition: opacity 0.2s;
-    pointer-events: none;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    background: var(--teal-darkest); color: var(--text);
+    font-size: 13px; font-family: var(--font);
+    padding: 9px 18px; border-radius: 20px;
+    opacity: 0; transition: opacity 0.2s;
+    pointer-events: none; z-index: 200;
+    display: flex; align-items: center; gap: 8px;
     white-space: nowrap;
   }
   .toast.show { opacity: 1; }
@@ -475,17 +514,41 @@
 <body>
 
 <div class="app" role="main">
-  <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Food logger</h1>
+  <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Food logger</h1>
 
   <div class="app-header">
     <div class="app-title">
       <i class="ti ti-salad" aria-hidden="true"></i>
       Food log
     </div>
-    <button class="export-btn" id="export-btn">
-      <i class="ti ti-clipboard" aria-hidden="true"></i>
-      Copy CSV
-    </button>
+
+    <div class="header-actions">
+      <button class="icon-btn" id="search-toggle-btn" aria-label="Search entries">
+        <i class="ti ti-search" aria-hidden="true"></i> Search
+      </button>
+      <button class="icon-btn" id="history-toggle-btn" aria-label="View history">
+        <i class="ti ti-calendar-month" aria-hidden="true"></i> History
+      </button>
+      <button class="icon-btn" id="export-btn">
+        <i class="ti ti-clipboard" aria-hidden="true"></i> Copy CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Search panel -->
+  <div class="search-panel" id="search-panel" style="display:none">
+    <div class="eyebrow">Search all entries</div>
+    <div class="search-input-wrap">
+      <i class="ti ti-search" aria-hidden="true"></i>
+      <input type="text" class="search-input" id="search-input" placeholder="Search food names…" autocomplete="off">
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+
+  <!-- History panel -->
+  <div class="history-panel" id="history-panel" style="display:none">
+    <div class="eyebrow">Last 10 weeks</div>
+    <div class="history-grid" id="history-grid"></div>
   </div>
 
   <div class="day-nav">
@@ -516,6 +579,21 @@
         <input type="text" id="entry-qty" placeholder="e.g. 1 bowl">
       </div>
     </div>
+    <div class="form-grid-2">
+      <div class="field">
+        <label>Meal</label>
+        <div class="meal-selector" id="meal-selector">
+          <button class="meal-opt" data-meal="breakfast" type="button">Breakfast</button>
+          <button class="meal-opt" data-meal="lunch" type="button">Lunch</button>
+          <button class="meal-opt" data-meal="dinner" type="button">Dinner</button>
+          <button class="meal-opt" data-meal="snack" type="button">Snack</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="entry-notes">Notes</label>
+        <textarea id="entry-notes" placeholder="e.g. post-run, felt good"></textarea>
+      </div>
+    </div>
     <div class="form-actions">
       <button class="btn-primary" id="log-btn"><i class="ti ti-plus" aria-hidden="true"></i> Log entry</button>
       <button class="btn-secondary" id="clear-btn">Clear</button>
@@ -531,29 +609,54 @@
   </div>
 </div>
 
+<!-- Quick-add button modal -->
 <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-header-icon"><i class="ti ti-bookmark" aria-hidden="true"></i></div>
       <h3 id="modal-title">New quick-add button</h3>
     </div>
-    <div class="field">
-      <label for="qb-label">Button label</label>
-      <input type="text" id="qb-label" placeholder="e.g. Morning coffee">
-    </div>
-    <div class="field">
-      <label for="qb-food">Food</label>
-      <input type="text" id="qb-food" placeholder="e.g. Coffee">
-    </div>
-    <div class="field">
-      <label for="qb-qty">Quantity</label>
-      <input type="text" id="qb-qty" placeholder="e.g. 1 mug">
-    </div>
+    <div class="field"><label for="qb-label">Button label</label><input type="text" id="qb-label" placeholder="e.g. Morning coffee"></div>
+    <div class="field"><label for="qb-food">Food</label><input type="text" id="qb-food" placeholder="e.g. Coffee"></div>
+    <div class="field"><label for="qb-qty">Quantity</label><input type="text" id="qb-qty" placeholder="e.g. 1 mug"></div>
     <div class="modal-actions">
       <button class="btn-secondary" id="modal-cancel">Cancel</button>
       <button class="btn-primary" id="modal-save" style="justify-content:center">Save</button>
     </div>
     <button class="modal-delete" id="modal-delete"><i class="ti ti-trash" aria-hidden="true" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i>Delete this button</button>
+  </div>
+</div>
+
+<!-- Entry edit modal -->
+<div class="modal-overlay" id="entry-modal" role="dialog" aria-modal="true" aria-labelledby="entry-modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-icon"><i class="ti ti-pencil" aria-hidden="true"></i></div>
+      <h3 id="entry-modal-title">Edit entry</h3>
+    </div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="field"><label for="edit-time">Time</label><input type="time" id="edit-time"></div>
+      <div class="field"><label for="edit-food">Food</label><input type="text" id="edit-food" placeholder="e.g. porridge"></div>
+      <div class="field"><label for="edit-qty">Quantity</label><input type="text" id="edit-qty" placeholder="e.g. 1 bowl"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Meal</label>
+      <div class="meal-selector" id="edit-meal-selector">
+        <button class="meal-opt" data-meal="breakfast" type="button">Breakfast</button>
+        <button class="meal-opt" data-meal="lunch" type="button">Lunch</button>
+        <button class="meal-opt" data-meal="dinner" type="button">Dinner</button>
+        <button class="meal-opt" data-meal="snack" type="button">Snack</button>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <label for="edit-notes">Notes</label>
+      <textarea id="edit-notes" placeholder="e.g. post-run, felt good"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="entry-modal-cancel">Cancel</button>
+      <button class="btn-primary" id="entry-modal-save" style="justify-content:center">Save</button>
+    </div>
+    <button class="modal-delete" id="entry-modal-delete" style="display:block"><i class="ti ti-trash" aria-hidden="true" style="font-size:13px;vertical-align:-1px;margin-right:4px"></i>Delete this entry</button>
   </div>
 </div>
 
@@ -564,9 +667,16 @@
 
 <script>
 (function(){
+  const MEALS = ['breakfast','lunch','dinner','snack'];
+  const MEAL_LABELS = { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack' };
+
   let currentDate = new Date(); currentDate.setHours(0,0,0,0);
   let editingQuickIdx = null;
+  let editingEntryIdx = null;
+  let selectedMeal = null;
+  let editSelectedMeal = null;
 
+  /* ── Storage ── */
   function dateKey(d){ return d.toISOString().split('T')[0]; }
   function formatDay(d){
     const today = new Date(); today.setHours(0,0,0,0);
@@ -587,6 +697,7 @@
   function getQuickButtons(){ return getStore('fl_quick',[]); }
   function saveQuickButtons(b){ setStore('fl_quick',b); }
 
+  /* ── Toast ── */
   function showToast(msg){
     const t=document.getElementById('toast');
     document.getElementById('toast-msg').textContent=msg;
@@ -594,12 +705,48 @@
     setTimeout(()=>t.classList.remove('show'),2200);
   }
 
+  /* ── Meal selector ── */
+  function initMealSelector(containerId, onSelect){
+    const container = document.getElementById(containerId);
+    container.querySelectorAll('.meal-opt').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const meal = btn.dataset.meal;
+        const newVal = onSelect(meal);
+        container.querySelectorAll('.meal-opt').forEach(b=>{
+          b.className = 'meal-opt' + (newVal && b.dataset.meal===newVal ? ' sel-'+newVal : '');
+        });
+      });
+    });
+  }
+
+  function setMealSelector(containerId, meal){
+    document.getElementById(containerId).querySelectorAll('.meal-opt').forEach(b=>{
+      b.className = 'meal-opt' + (meal && b.dataset.meal===meal ? ' sel-'+meal : '');
+    });
+  }
+
+  initMealSelector('meal-selector', meal=>{
+    selectedMeal = (selectedMeal===meal) ? null : meal;
+    return selectedMeal;
+  });
+
+  initMealSelector('edit-meal-selector', meal=>{
+    editSelectedMeal = (editSelectedMeal===meal) ? null : meal;
+    return editSelectedMeal;
+  });
+
+  /* ── Day nav ── */
   function updateDayLabel(){
     const label = formatDay(currentDate);
     document.getElementById('day-label').textContent = label;
-    document.getElementById('log-label').textContent = label === 'Today' ? "Today's log" : label + "'s log";
+    document.getElementById('log-label').textContent = label==='Today' ? "Today's log" : label+"'s log";
   }
 
+  document.getElementById('prev-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()-1); updateDayLabel(); renderLog(); renderHistory(); });
+  document.getElementById('next-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()+1); updateDayLabel(); renderLog(); renderHistory(); });
+  document.getElementById('today-btn').addEventListener('click',()=>{ currentDate=new Date(); currentDate.setHours(0,0,0,0); updateDayLabel(); renderLog(); renderHistory(); });
+
+  /* ── Render log ── */
   function renderLog(){
     const entries = getDayLogs(currentDate);
     const pill = document.getElementById('count-pill');
@@ -611,21 +758,81 @@
     }
     pill.style.display='inline-block';
     pill.textContent=entries.length+(entries.length===1?' entry':' entries');
-    list.innerHTML='<div class="log-list">'+entries.map((e,i)=>`
-      <div class="log-entry">
-        <span class="entry-time">${esc(e.time)||'--:--'}</span>
-        <span class="entry-dot"></span>
-        <span class="entry-food">${esc(e.food)}</span>
-        <span class="entry-qty">${esc(e.qty)}</span>
-        <button class="entry-delete" data-idx="${i}" aria-label="Remove ${esc(e.food)}"><i class="ti ti-x" style="font-size:14px" aria-hidden="true"></i></button>
-      </div>`).join('')+'</div>';
-    list.querySelectorAll('.entry-delete').forEach(btn=>{
+
+    // Group by meal
+    const groups = {};
+    const order = ['breakfast','lunch','dinner','snack','other'];
+    entries.forEach((e,i)=>{
+      const key = MEALS.includes(e.meal) ? e.meal : 'other';
+      if(!groups[key]) groups[key]=[];
+      groups[key].push({e,i});
+    });
+
+    const hasMeals = Object.keys(groups).some(k=>k!=='other') || Object.keys(groups).length>1 || (groups['other']&&entries.some(e=>e.meal));
+    const useGroups = hasMeals || entries.some(e=>e.meal);
+
+    let html = '';
+    if(useGroups && Object.keys(groups).length>0){
+      order.forEach(key=>{
+        if(!groups[key]) return;
+        const label = key==='other' ? 'Other' : MEAL_LABELS[key];
+        html += `<div class="meal-group">
+          <div class="meal-group-label lbl-${key}">${label}</div>
+          <div class="log-list">`;
+        groups[key].forEach(({e,i})=>{ html+=entryHTML(e,i); });
+        html += `</div></div>`;
+      });
+    } else {
+      html = '<div class="log-list">'+entries.map((e,i)=>entryHTML(e,i)).join('')+'</div>';
+    }
+
+    list.innerHTML = html;
+    list.querySelectorAll('.entry-action-btn.edit').forEach(btn=>{
+      btn.addEventListener('click',()=>openEntryModal(+btn.dataset.idx));
+    });
+    list.querySelectorAll('.entry-action-btn.dup').forEach(btn=>{
+      btn.addEventListener('click',()=>duplicateEntry(+btn.dataset.idx));
+    });
+    list.querySelectorAll('.entry-action-btn.del').forEach(btn=>{
       btn.addEventListener('click',()=>{
-        const e=getDayLogs(currentDate); e.splice(+btn.dataset.idx,1); saveDayLogs(currentDate,e); renderLog();
+        const e=getDayLogs(currentDate); e.splice(+btn.dataset.idx,1); saveDayLogs(currentDate,e); renderLog(); renderHistory();
       });
     });
   }
 
+  function entryHTML(e,i){
+    const mealTag = MEALS.includes(e.meal) ? `<span class="meal-tag tag-${e.meal}">${MEAL_LABELS[e.meal]}</span>` : '';
+    const notes = e.notes ? `<div class="entry-notes">${esc(e.notes)}</div>` : '';
+    return `<div class="log-entry">
+      <span class="entry-time">${esc(e.time)||'--:--'}</span>
+      <span class="entry-dot"></span>
+      <div class="entry-body">
+        <div class="entry-food">${esc(e.food)}</div>
+        ${notes}
+      </div>
+      ${mealTag}
+      <span class="entry-qty">${esc(e.qty)}</span>
+      <div class="entry-actions">
+        <button class="entry-action-btn edit" data-idx="${i}" aria-label="Edit ${esc(e.food)}"><i class="ti ti-pencil" style="font-size:13px" aria-hidden="true"></i></button>
+        <button class="entry-action-btn dup" data-idx="${i}" aria-label="Duplicate ${esc(e.food)}"><i class="ti ti-copy" style="font-size:13px" aria-hidden="true"></i></button>
+        <button class="entry-action-btn del" data-idx="${i}" aria-label="Remove ${esc(e.food)}"><i class="ti ti-x" style="font-size:13px" aria-hidden="true"></i></button>
+      </div>
+    </div>`;
+  }
+
+  /* ── Duplicate entry ── */
+  function duplicateEntry(idx){
+    const entries = getDayLogs(currentDate);
+    const src = entries[idx];
+    const copy = { ...src, time: nowTime() };
+    entries.push(copy);
+    entries.sort((a,b)=>a.time.localeCompare(b.time));
+    saveDayLogs(currentDate,entries);
+    renderLog();
+    showToast('Entry duplicated');
+  }
+
+  /* ── Quick-add buttons ── */
   function renderQuickButtons(){
     const btns=getQuickButtons();
     const container=document.getElementById('quick-buttons');
@@ -650,6 +857,7 @@
     container.appendChild(addEl);
   }
 
+  /* ── Quick-add modal ── */
   function openModal(idx){
     editingQuickIdx=idx;
     const delBtn=document.getElementById('modal-delete');
@@ -670,13 +878,10 @@
     document.getElementById('modal').classList.add('open');
     document.getElementById('qb-label').focus();
   }
-
   function closeModal(){ document.getElementById('modal').classList.remove('open'); }
 
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
-
   document.getElementById('modal-save').addEventListener('click',()=>{
     const label=document.getElementById('qb-label').value.trim();
     const food=document.getElementById('qb-food').value.trim();
@@ -687,24 +892,85 @@
     saveQuickButtons(btns); renderQuickButtons(); closeModal();
     showToast(editingQuickIdx!==null ? 'Button updated' : 'Button added');
   });
-
   document.getElementById('modal-delete').addEventListener('click',()=>{
     if(editingQuickIdx===null) return;
     const btns=getQuickButtons(); btns.splice(editingQuickIdx,1); saveQuickButtons(btns); renderQuickButtons(); closeModal();
     showToast('Button removed');
   });
+  ['qb-label','qb-food','qb-qty'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('modal-save').click(); });
+  });
 
+  /* ── Entry edit modal ── */
+  function openEntryModal(idx){
+    editingEntryIdx=idx;
+    const e=getDayLogs(currentDate)[idx];
+    document.getElementById('edit-time').value=e.time||'';
+    document.getElementById('edit-food').value=e.food||'';
+    document.getElementById('edit-qty').value=e.qty||'';
+    document.getElementById('edit-notes').value=e.notes||'';
+    editSelectedMeal = e.meal||null;
+    setMealSelector('edit-meal-selector', editSelectedMeal);
+    document.getElementById('entry-modal').classList.add('open');
+    document.getElementById('edit-food').focus();
+  }
+  function closeEntryModal(){ document.getElementById('entry-modal').classList.remove('open'); }
+
+  document.getElementById('entry-modal-cancel').addEventListener('click', closeEntryModal);
+  document.getElementById('entry-modal').addEventListener('click',e=>{ if(e.target===document.getElementById('entry-modal')) closeEntryModal(); });
+  document.getElementById('entry-modal-save').addEventListener('click',()=>{
+    const food=document.getElementById('edit-food').value.trim();
+    if(!food) return;
+    const entries=getDayLogs(currentDate);
+    entries[editingEntryIdx]={
+      time: document.getElementById('edit-time').value||nowTime(),
+      food,
+      qty: document.getElementById('edit-qty').value.trim()||'—',
+      meal: editSelectedMeal||null,
+      notes: document.getElementById('edit-notes').value.trim()||null
+    };
+    entries.sort((a,b)=>a.time.localeCompare(b.time));
+    saveDayLogs(currentDate,entries);
+    closeEntryModal(); renderLog();
+    showToast('Entry updated');
+  });
+  document.getElementById('entry-modal-delete').addEventListener('click',()=>{
+    const entries=getDayLogs(currentDate);
+    entries.splice(editingEntryIdx,1);
+    saveDayLogs(currentDate,entries);
+    closeEntryModal(); renderLog(); renderHistory();
+    showToast('Entry deleted');
+  });
+  ['edit-food','edit-qty','edit-time'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('entry-modal-save').click(); });
+  });
+
+  /* ── Escape closes any open modal ── */
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ closeModal(); closeEntryModal(); }
+  });
+
+  /* ── Log form ── */
   document.getElementById('log-btn').addEventListener('click',()=>{
     const food=document.getElementById('entry-food').value.trim();
     if(!food){ document.getElementById('entry-food').focus(); return; }
-    const entry={ time: document.getElementById('entry-time').value||nowTime(), food, qty: document.getElementById('entry-qty').value.trim()||'—' };
+    const entry={
+      time: document.getElementById('entry-time').value||nowTime(),
+      food,
+      qty: document.getElementById('entry-qty').value.trim()||'—',
+      meal: selectedMeal||null,
+      notes: document.getElementById('entry-notes').value.trim()||null
+    };
     const entries=getDayLogs(currentDate); entries.push(entry);
     entries.sort((a,b)=>a.time.localeCompare(b.time));
     saveDayLogs(currentDate,entries);
     document.getElementById('entry-food').value='';
     document.getElementById('entry-qty').value='';
     document.getElementById('entry-time').value='';
-    renderLog();
+    document.getElementById('entry-notes').value='';
+    selectedMeal=null;
+    setMealSelector('meal-selector',null);
+    renderLog(); renderHistory();
     document.getElementById('entry-food').focus();
   });
 
@@ -712,18 +978,22 @@
     document.getElementById('entry-food').value='';
     document.getElementById('entry-qty').value='';
     document.getElementById('entry-time').value='';
+    document.getElementById('entry-notes').value='';
+    selectedMeal=null;
+    setMealSelector('meal-selector',null);
   });
 
-  document.getElementById('prev-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()-1); updateDayLabel(); renderLog(); });
-  document.getElementById('next-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()+1); updateDayLabel(); renderLog(); });
-  document.getElementById('today-btn').addEventListener('click',()=>{ currentDate=new Date(); currentDate.setHours(0,0,0,0); updateDayLabel(); renderLog(); });
+  ['entry-food','entry-qty','entry-time'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); });
+  });
 
+  /* ── Copy CSV ── */
   document.getElementById('export-btn').addEventListener('click',()=>{
     const allLogs=getLogs();
     const days=Object.keys(allLogs).sort();
     if(days.length===0){ showToast('Nothing to copy yet'); return; }
-    const rows=[['Date','Time','Food','Quantity']];
-    days.forEach(day=>{ (allLogs[day]||[]).forEach(e=>{ rows.push([day,e.time||'',e.food||'',e.qty||'']); }); });
+    const rows=[['Date','Time','Meal','Food','Quantity','Notes']];
+    days.forEach(day=>{ (allLogs[day]||[]).forEach(e=>{ rows.push([day,e.time||'',e.meal||'',e.food||'',e.qty||'',e.notes||'']); }); });
     const csv=rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(',')).join('\n');
     navigator.clipboard.writeText(csv).then(()=>{
       const btn=document.getElementById('export-btn');
@@ -733,13 +1003,129 @@
     }).catch(()=>{ showToast('Copy failed — try again'); });
   });
 
-  ['entry-food','entry-qty','entry-time'].forEach(id=>{
-    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); });
-  });
-  ['qb-label','qb-food','qb-qty'].forEach(id=>{
-    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('modal-save').click(); });
+  /* ── Search ── */
+  document.getElementById('search-toggle-btn').addEventListener('click',()=>{
+    const panel=document.getElementById('search-panel');
+    const isOpen = panel.style.display!=='none';
+    panel.style.display = isOpen ? 'none' : 'block';
+    document.getElementById('search-toggle-btn').classList.toggle('active',!isOpen);
+    if(!isOpen){
+      document.getElementById('search-input').focus();
+      renderSearch('');
+    } else {
+      document.getElementById('search-input').value='';
+      document.getElementById('search-results').innerHTML='';
+    }
+    // close history if open
+    document.getElementById('history-panel').style.display='none';
+    document.getElementById('history-toggle-btn').classList.remove('active');
   });
 
+  document.getElementById('search-input').addEventListener('input', function(){
+    renderSearch(this.value.trim());
+  });
+
+  function renderSearch(query){
+    const resultsEl = document.getElementById('search-results');
+    if(!query){ resultsEl.innerHTML=''; return; }
+    const allLogs = getLogs();
+    const q = query.toLowerCase();
+    const matches = [];
+    Object.keys(allLogs).sort().reverse().forEach(day=>{
+      (allLogs[day]||[]).forEach(e=>{
+        if((e.food||'').toLowerCase().includes(q) || (e.notes||'').toLowerCase().includes(q)){
+          matches.push({day,e});
+        }
+      });
+    });
+    if(matches.length===0){
+      resultsEl.innerHTML='<div class="search-empty">No entries found for "'+esc(query)+'"</div>';
+      return;
+    }
+    resultsEl.innerHTML = matches.slice(0,50).map(({day,e})=>{
+      const d = new Date(day+'T00:00:00');
+      const dayStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      const mealTag = MEALS.includes(e.meal) ? `<span class="meal-tag tag-${e.meal}" style="margin-left:6px">${MEAL_LABELS[e.meal]}</span>` : '';
+      const notes = e.notes ? `<div class="entry-notes" style="margin-top:2px">${esc(e.notes)}</div>` : '';
+      return `<div class="search-result-entry" data-day="${day}">
+        <span class="search-date">${dayStr}</span>
+        <div class="entry-body">
+          <div class="entry-food">${esc(e.food)} ${mealTag}</div>
+          ${notes}
+        </div>
+        <span class="entry-qty">${esc(e.qty)}</span>
+      </div>`;
+    }).join('');
+
+    resultsEl.querySelectorAll('.search-result-entry').forEach(el=>{
+      el.addEventListener('click',()=>{
+        const d = new Date(el.dataset.day+'T00:00:00');
+        currentDate = d;
+        updateDayLabel(); renderLog(); renderHistory();
+        document.getElementById('search-panel').style.display='none';
+        document.getElementById('search-toggle-btn').classList.remove('active');
+        document.getElementById('search-input').value='';
+        document.getElementById('search-results').innerHTML='';
+      });
+    });
+  }
+
+  /* ── History ── */
+  document.getElementById('history-toggle-btn').addEventListener('click',()=>{
+    const panel=document.getElementById('history-panel');
+    const isOpen = panel.style.display!=='none';
+    panel.style.display = isOpen ? 'none' : 'block';
+    document.getElementById('history-toggle-btn').classList.toggle('active',!isOpen);
+    if(!isOpen) renderHistory();
+    // close search if open
+    document.getElementById('search-panel').style.display='none';
+    document.getElementById('search-toggle-btn').classList.remove('active');
+  });
+
+  function renderHistory(){
+    const grid = document.getElementById('history-grid');
+    if(document.getElementById('history-panel').style.display==='none') return;
+
+    const allLogs = getLogs();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayKey = dateKey(today);
+    const currentKey = dateKey(currentDate);
+
+    // Start from Monday 10 weeks ago
+    const start = new Date(today);
+    start.setDate(today.getDate() - (today.getDay()===0 ? 6 : today.getDay()-1) - 69);
+
+    const dows = ['M','T','W','T','F','S','S'];
+    let html = dows.map(d=>`<div class="history-dow">${d}</div>`).join('');
+
+    let cursor = new Date(start);
+    for(let i=0;i<70;i++){
+      const key = dateKey(cursor);
+      const hasEntries = allLogs[key]&&allLogs[key].length>0;
+      const isToday = key===todayKey;
+      const isCurrent = key===currentKey;
+      const isFuture = cursor > today;
+      let cls = 'history-day';
+      if(isCurrent) cls+=' is-current';
+      else if(hasEntries) cls+=' has-entries';
+      else if(isToday) cls+=' is-today';
+      if(isFuture) cls+=' empty-slot';
+      const dayNum = cursor.getDate();
+      html += `<button class="${cls}" data-key="${key}" ${isFuture?'disabled':''} aria-label="${cursor.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}">${dayNum}</button>`;
+      cursor.setDate(cursor.getDate()+1);
+    }
+
+    grid.innerHTML = html;
+    grid.querySelectorAll('.history-day:not(.empty-slot)').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const d = new Date(btn.dataset.key+'T00:00:00');
+        currentDate = d;
+        updateDayLabel(); renderLog(); renderHistory();
+      });
+    });
+  }
+
+  /* ── Init ── */
   document.getElementById('entry-time').value=nowTime();
   updateDayLabel();
   renderLog();
