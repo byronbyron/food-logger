@@ -531,6 +531,9 @@
       <button class="icon-btn" id="export-btn">
         <i class="ti ti-clipboard" aria-hidden="true"></i> Copy CSV
       </button>
+      <button class="icon-btn" id="json-btn">
+        <i class="ti ti-braces" aria-hidden="true"></i> Copy JSON
+      </button>
     </div>
   </div>
 
@@ -984,6 +987,19 @@
 
   ['entry-food','entry-qty','entry-time'].forEach(id=>{
     document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); });
+  });
+
+  /* ── Copy day JSON ── */
+  document.getElementById('json-btn').addEventListener('click',()=>{
+    const entries=getDayLogs(currentDate);
+    if(entries.length===0){ showToast('Nothing logged for this day'); return; }
+    const json=JSON.stringify({ date: dateKey(currentDate), entries }, null, 2);
+    navigator.clipboard.writeText(json).then(()=>{
+      const btn=document.getElementById('json-btn');
+      btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> Copied!';
+      showToast('Day log copied as JSON');
+      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> Copy JSON'; },2000);
+    }).catch(()=>{ showToast('Copy failed — try again'); });
   });
 
   /* ── Copy day CSV ── */
