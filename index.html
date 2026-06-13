@@ -1074,8 +1074,8 @@
 
     resultsEl.querySelectorAll('.search-result-entry').forEach(el=>{
       el.addEventListener('click',()=>{
-        const d = new Date(el.dataset.day+'T00:00:00');
-        currentDate = d;
+        const [sy,sm,sd] = el.dataset.day.split('-').map(Number);
+        currentDate = new Date(sy, sm-1, sd);
         updateDayLabel(); renderLog(); renderHistory();
         document.getElementById('search-panel').style.display='none';
         document.getElementById('search-toggle-btn').classList.remove('active');
@@ -1106,16 +1106,28 @@
     const todayKey = dateKey(today);
     const currentKey = dateKey(currentDate);
 
-    // Start from Monday 10 weeks ago
-    const start = new Date(today);
-    start.setDate(today.getDate() - (today.getDay()===0 ? 6 : today.getDay()-1) - 69);
+    // End on the Sunday on or after today so today is always visible
+    const todayDow = today.getDay(); // 0=Sun,1=Mon...
+    const daysToSunday = todayDow===0 ? 0 : 7 - todayDow;
+    const end = new Date(today);
+    end.setDate(today.getDate() + daysToSunday);
+
+    // Start on the Monday 10 weeks before that Sunday
+    const start = new Date(end);
+    start.setDate(end.getDate() - 69);
+
+    const totalDays = Math.round((end - start) / 86400000) + 1; // always 70
 
     const dows = ['M','T','W','T','F','S','S'];
     let html = dows.map(d=>`<div class="history-dow">${d}</div>`).join('');
 
     let cursor = new Date(start);
-    for(let i=0;i<70;i++){
-      const key = dateKey(cursor);
+    for(let i=0;i<totalDays;i++){
+      // Build key from local date parts to avoid UTC offset issues
+      const y = cursor.getFullYear();
+      const m = String(cursor.getMonth()+1).padStart(2,'0');
+      const d = String(cursor.getDate()).padStart(2,'0');
+      const key = `${y}-${m}-${d}`;
       const hasEntries = allLogs[key]&&allLogs[key].length>0;
       const isToday = key===todayKey;
       const isCurrent = key===currentKey;
@@ -1131,10 +1143,11 @@
     }
 
     grid.innerHTML = html;
-    grid.querySelectorAll('.history-day:not(.empty-slot)').forEach(btn=>{
+    // Use same local-date approach when navigating to a clicked day
+    grid.querySelectorAll('.history-day:not(.empty-slot):not([disabled])').forEach(btn=>{
       btn.addEventListener('click',()=>{
-        const d = new Date(btn.dataset.key+'T00:00:00');
-        currentDate = d;
+        const [y,mo,d] = btn.dataset.key.split('-').map(Number);
+        currentDate = new Date(y, mo-1, d);
         updateDayLabel(); renderLog(); renderHistory();
       });
     });
