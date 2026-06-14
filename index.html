@@ -617,9 +617,6 @@
       <button class="icon-btn" id="history-toggle-btn" aria-label="View history">
         <i class="ti ti-calendar-month" aria-hidden="true"></i> <span>History</span>
       </button>
-      <button class="icon-btn" id="export-btn">
-        <i class="ti ti-clipboard" aria-hidden="true"></i> <span>Copy CSV</span>
-      </button>
       <button class="icon-btn" id="json-btn">
         <i class="ti ti-braces" aria-hidden="true"></i> <span>Copy JSON</span>
       </button>
@@ -1222,22 +1219,6 @@
   });
 
   ['entry-food','entry-qty','entry-time'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); }); });
-
-  /* ── Copy CSV ── */
-  document.getElementById('export-btn').addEventListener('click',()=>{
-    const entries=getDayLogs(currentDate);
-    if(entries.length===0){ showToast('Nothing logged for this day'); return; }
-    const day=dateKey(currentDate);
-    const rows=[['Date','Time','Meal','Food','Quantity','Notes']];
-    entries.forEach(e=>{ rows.push([day,e.time||'',e.meal||'',e.food||'',e.qty||'',e.notes||'']); });
-    const csv=rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(',')).join('\n');
-    navigator.clipboard.writeText(csv).then(()=>{
-      const btn=document.getElementById('export-btn');
-      btn.innerHTML='<i class="ti ti-clipboard-check" aria-hidden="true"></i> <span>Copied!</span>';
-      showToast('Day log copied to clipboard');
-      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-clipboard" aria-hidden="true"></i> <span>Copy CSV</span>'; },2000);
-    }).catch(()=>{ showToast('Copy failed — try again'); });
-  });
 
   /* ── Copy JSON ── */
   document.getElementById('json-btn').addEventListener('click',()=>{
