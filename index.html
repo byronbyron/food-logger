@@ -229,10 +229,60 @@
     gap: 10px;
     margin-bottom: 12px;
   }
-  @media (max-width: 480px) {
-    .form-grid { grid-template-columns: 1fr 1fr; }
-    .form-grid .field:first-child { grid-column: 1 / -1; }
+  @media (max-width: 600px) {
+    body { padding: 0; }
+
+    .app {
+      border-radius: 0;
+      border-left: none; border-right: none; border-top: none;
+      padding: 1rem 1rem 2rem;
+      min-height: 100vh;
+    }
+
+    /* Header: hide text labels on small screens */
+    .app-title { font-size: 16px; }
+    .icon-btn { padding: 8px 10px; font-size: 0; gap: 0; }
+    .icon-btn i { font-size: 18px !important; }
+    .icon-btn span { display: none; }
+
+    /* Day nav: larger touch targets */
+    .day-nav { padding: 6px 10px; }
+    .day-nav-arrow { padding: 8px 12px; }
+    .today-btn { padding: 8px 12px; }
+
+    /* Form: all fields full-width stacked */
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .field:first-child { grid-column: auto; }
     .form-grid-2 { grid-template-columns: 1fr; }
+
+    /* Meal selector: horizontal scroll row */
+    .meal-selector { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .meal-opt { flex-shrink: 0; padding: 8px 16px; font-size: 13px; }
+
+    /* Larger input tap targets */
+    .field input, .field textarea, .field select { padding: 11px 12px; font-size: 16px; }
+    .field textarea { height: 64px; }
+
+    /* Log form buttons: full width */
+    .form-actions { flex-direction: column; }
+    .btn-primary { justify-content: center; padding: 12px; font-size: 15px; }
+    .btn-secondary { padding: 12px; font-size: 15px; text-align: center; }
+
+    /* Log entries: always show action buttons on touch */
+    .entry-action-btn { opacity: 1; padding: 7px 8px; }
+    .entry-action-btn i { font-size: 16px !important; }
+    .log-entry { padding: 12px 10px; gap: 8px; }
+    .entry-qty { display: none; }
+
+    /* History: slightly larger cells */
+    .history-grid { gap: 3px; }
+    .history-day { font-size: 12px; border-radius: 5px; }
+
+    /* Modals: full-width bottom sheet feel */
+    .modal-overlay { align-items: flex-end; padding: 0; }
+    .modal { border-radius: 16px 16px 0 0; max-width: 100%; padding: 1.5rem 1.25rem 2rem; }
+    .modal .field input, .modal .field textarea { font-size: 16px; padding: 11px 12px; }
+    .modal-actions .btn-primary, .modal-actions .btn-secondary { padding: 12px; font-size: 15px; }
   }
   .field label {
     font-size: 11px; font-weight: 500;
@@ -500,7 +550,7 @@
   .toast {
     position: fixed; bottom: 1.5rem; left: 50%;
     transform: translateX(-50%);
-    background: var(--teal-darkest); color: var(--teal-mid);
+    background: var(--teal-darkest); color: #ffffff;
     font-size: 13px; font-family: var(--font);
     padding: 9px 18px; border-radius: 20px;
     opacity: 0; transition: opacity 0.2s;
@@ -523,16 +573,16 @@
     </div>
     <div class="header-actions">
       <button class="icon-btn" id="search-toggle-btn" aria-label="Search entries">
-        <i class="ti ti-search" aria-hidden="true"></i> Search
+        <i class="ti ti-search" aria-hidden="true"></i> <span>Search</span>
       </button>
       <button class="icon-btn" id="history-toggle-btn" aria-label="View history">
-        <i class="ti ti-calendar-month" aria-hidden="true"></i> History
+        <i class="ti ti-calendar-month" aria-hidden="true"></i> <span>History</span>
       </button>
       <button class="icon-btn" id="export-btn">
-        <i class="ti ti-clipboard" aria-hidden="true"></i> Copy CSV
+        <i class="ti ti-clipboard" aria-hidden="true"></i> <span>Copy CSV</span>
       </button>
       <button class="icon-btn" id="json-btn">
-        <i class="ti ti-braces" aria-hidden="true"></i> Copy JSON
+        <i class="ti ti-braces" aria-hidden="true"></i> <span>Copy JSON</span>
       </button>
     </div>
   </div>
@@ -996,9 +1046,9 @@
     const json=JSON.stringify({ date: dateKey(currentDate), entries }, null, 2);
     navigator.clipboard.writeText(json).then(()=>{
       const btn=document.getElementById('json-btn');
-      btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> Copied!';
+      btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> <span>Copied!</span>';
       showToast('Day log copied as JSON');
-      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> Copy JSON'; },2000);
+      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> <span>Copy JSON</span>'; },2000);
     }).catch(()=>{ showToast('Copy failed — try again'); });
   });
 
@@ -1012,9 +1062,9 @@
     const csv=rows.map(r=>r.map(c=>'"'+(c+'').replace(/"/g,'""')+'"').join(',')).join('\n');
     navigator.clipboard.writeText(csv).then(()=>{
       const btn=document.getElementById('export-btn');
-      btn.innerHTML='<i class="ti ti-clipboard-check" aria-hidden="true"></i> Copied!';
+      btn.innerHTML='<i class="ti ti-clipboard-check" aria-hidden="true"></i> <span>Copied!</span>';
       showToast('Day log copied to clipboard');
-      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-clipboard" aria-hidden="true"></i> Copy CSV'; },2000);
+      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-clipboard" aria-hidden="true"></i> <span>Copy CSV</span>'; },2000);
     }).catch(()=>{ showToast('Copy failed — try again'); });
   });
 
