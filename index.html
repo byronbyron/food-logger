@@ -769,7 +769,7 @@
 <script>
 (function(){
   const CLIENT_ID = '705894638854-1esqj1ei8d0sj6i0otvablbag4l2v3r9.apps.googleusercontent.com';
-  const SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+  const SCOPE = 'https://www.googleapis.com/auth/drive.file';
   const DRIVE_FILE_NAME = 'food-log-data.json';
   const MEALS = ['breakfast','lunch','dinner','snack'];
   const MEAL_LABELS = { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack' };
@@ -847,6 +847,8 @@
   }
 
   function connectDrive(){
+    // Save current scroll + date so we can restore after redirect
+    localStorage.setItem('fl_oauth_return', '1');
     const redirectUri = window.location.href.split('?')[0].split('#')[0];
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
@@ -855,31 +857,24 @@
       scope: SCOPE,
       prompt: 'consent'
     });
-    const popup = window.open(
-      'https://accounts.google.com/o/oauth2/v2/auth?' + params,
-      'drive-auth',
-      'width=500,height=620,left='+(screen.width/2-250)+',top='+(screen.height/2-310)
-    );
-    // Poll for redirect back with token in hash
-    const poll = setInterval(()=>{
-      try {
-        if(!popup || popup.closed){ clearInterval(poll); return; }
-        const hash = popup.location.hash;
-        if(hash && hash.includes('access_token')){
-          clearInterval(poll);
-          popup.close();
-          const p = new URLSearchParams(hash.slice(1));
-          const token = p.get('access_token');
-          const expiresIn = parseInt(p.get('expires_in')||'3600');
-          setToken(token);
-          // Schedule token expiry clear
-          setTimeout(()=>{ clearToken(); updateDriveUI(); setSyncStatus('idle',''); showToast('Drive session expired — please reconnect'); }, expiresIn*1000);
-          updateDriveUI();
-          driveFileId = localStorage.getItem('fl_drive_file_id') || null;
-          loadFromDrive().then(()=>{ showToast('Google Drive connected'); });
-        }
-      } catch(e){ /* cross-origin, keep polling */ }
-    }, 300);
+    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
+  }
+
+  function handleOAuthReturn(){
+    // Check if we've just come back from Google OAuth redirect
+    const hash = window.location.hash;
+    if(!hash.includes('access_token')) return false;
+    const p = new URLSearchParams(hash.slice(1));
+    const token = p.get('access_token');
+    const expiresIn = parseInt(p.get('expires_in')||'3600');
+    if(!token) return false;
+    // Clean the hash from the URL without triggering a reload
+    history.replaceState(null, '', window.location.pathname);
+    setToken(token);
+    localStorage.removeItem('fl_oauth_return');
+    // Schedule token expiry clear
+    setTimeout(()=>{ clearToken(); updateDriveUI(); setSyncStatus('idle',''); showToast('Drive session expired — reconnect via the Drive button'); }, expiresIn*1000);
+    return true;
   }
 
   function disconnectDrive(){
@@ -909,7 +904,7 @@
 
   async function findDriveFile(){
     const res = await driveRequest(
-      `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'&fields=files(id,name)`
+      `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FILE_NAME}'+and+trashed=false&fields=files(id,name)&spaces=drive`
     );
     if(!res) return null;
     const data = await res.json();
@@ -935,8 +930,8 @@
         { method:'PATCH', headers:{'Content-Type':'application/json'}, body }
       );
     } else {
-      // Create in appDataFolder
-      const meta = JSON.stringify({ name: DRIVE_FILE_NAME, parents: ['appDataFolder'] });
+      // Create in Drive root (visible in Drive)
+      const meta = JSON.stringify({ name: DRIVE_FILE_NAME });
       const form = new FormData();
       form.append('metadata', new Blob([meta],{type:'application/json'}));
       form.append('file', new Blob([body],{type:'application/json'}));
@@ -1351,10 +1346,15 @@
   updateDayLabel();
   renderLog();
   renderQuickButtons();
+
+  // Handle OAuth redirect return BEFORE setting up UI
+  const justAuthed = handleOAuthReturn();
   updateDriveUI();
 
-  // If already connected, restore file ID and load from Drive
-  if(getToken()){
+  if(justAuthed){
+    driveFileId = localStorage.getItem('fl_drive_file_id') || null;
+    loadFromDrive().then(()=>{ showToast('Google Drive connected'); });
+  } else if(getToken()){
     driveFileId = localStorage.getItem('fl_drive_file_id') || null;
     loadFromDrive();
   }
