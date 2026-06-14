@@ -96,7 +96,7 @@
     color: var(--text);
   }
   .app-title i { font-size: 20px; color: var(--teal-muted); }
-  .header-actions { display: flex; gap: 8px; }
+  .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .icon-btn {
     display: flex;
     align-items: center;
@@ -109,11 +109,58 @@
     cursor: pointer;
     color: var(--text-secondary);
     font-family: var(--font);
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
     white-space: nowrap;
   }
   .icon-btn:hover { background: var(--bg-secondary); color: var(--text); }
   .icon-btn.active { background: var(--teal-light); color: var(--teal-dark); border-color: var(--teal-mid); }
+
+  /* ── Sync status ── */
+  .sync-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+  }
+  .sync-status i { font-size: 13px; }
+  .sync-status.syncing { color: var(--teal-muted); }
+  .sync-status.syncing i { animation: spin 1s linear infinite; }
+  .sync-status.error { color: var(--coral-dark); }
+  .sync-status.ok { color: var(--teal); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Drive connect banner ── */
+  .drive-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--teal-light);
+    border: 0.5px solid var(--teal-mid);
+    border-radius: var(--radius-lg);
+    padding: 12px 16px;
+    margin-bottom: 1.5rem;
+  }
+  .drive-banner i { font-size: 20px; color: var(--teal-dark); flex-shrink: 0; }
+  .drive-banner-text { flex: 1; }
+  .drive-banner-text strong { font-size: 13px; color: var(--teal-dark); display: block; margin-bottom: 2px; }
+  .drive-banner-text span { font-size: 12px; color: var(--teal-dark); opacity: 0.8; }
+  .drive-connect-btn {
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font);
+    white-space: nowrap;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .drive-connect-btn:hover { background: var(--teal-dark); }
 
   /* ── Day nav ── */
   .day-nav {
@@ -228,61 +275,6 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-bottom: 12px;
-  }
-  @media (max-width: 600px) {
-    body { padding: 0; }
-
-    .app {
-      border-radius: 0;
-      border-left: none; border-right: none; border-top: none;
-      padding: 1rem 1rem 2rem;
-      min-height: 100vh;
-    }
-
-    /* Header: hide text labels on small screens */
-    .app-title { font-size: 16px; }
-    .icon-btn { padding: 8px 10px; font-size: 0; gap: 0; }
-    .icon-btn i { font-size: 18px !important; }
-    .icon-btn span { display: none; }
-
-    /* Day nav: larger touch targets */
-    .day-nav { padding: 6px 10px; }
-    .day-nav-arrow { padding: 8px 12px; }
-    .today-btn { padding: 8px 12px; }
-
-    /* Form: all fields full-width stacked */
-    .form-grid { grid-template-columns: 1fr; }
-    .form-grid .field:first-child { grid-column: auto; }
-    .form-grid-2 { grid-template-columns: 1fr; }
-
-    /* Meal selector: horizontal scroll row */
-    .meal-selector { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
-    .meal-opt { flex-shrink: 0; padding: 8px 16px; font-size: 13px; }
-
-    /* Larger input tap targets */
-    .field input, .field textarea, .field select { padding: 11px 12px; font-size: 16px; }
-    .field textarea { height: 64px; }
-
-    /* Log form buttons: full width */
-    .form-actions { flex-direction: column; }
-    .btn-primary { justify-content: center; padding: 12px; font-size: 15px; }
-    .btn-secondary { padding: 12px; font-size: 15px; text-align: center; }
-
-    /* Log entries: always show action buttons on touch */
-    .entry-action-btn { opacity: 1; padding: 7px 8px; }
-    .entry-action-btn i { font-size: 16px !important; }
-    .log-entry { padding: 12px 10px; gap: 8px; }
-    .entry-qty { display: none; }
-
-    /* History: slightly larger cells */
-    .history-grid { gap: 3px; }
-    .history-day { font-size: 12px; border-radius: 5px; }
-
-    /* Modals: full-width bottom sheet feel */
-    .modal-overlay { align-items: flex-end; padding: 0; }
-    .modal { border-radius: 16px 16px 0 0; max-width: 100%; padding: 1.5rem 1.25rem 2rem; }
-    .modal .field input, .modal .field textarea { font-size: 16px; padding: 11px 12px; }
-    .modal-actions .btn-primary, .modal-actions .btn-secondary { padding: 12px; font-size: 15px; }
   }
   .field label {
     font-size: 11px; font-weight: 500;
@@ -507,7 +499,7 @@
   .history-day.has-entries { background: var(--teal-light); color: var(--teal-dark); font-weight: 500; }
   .history-day.is-today { border-color: var(--teal); }
   .history-day.is-current { background: var(--teal); color: #fff; font-weight: 600; border-color: var(--teal); }
-  .history-day.empty-slot { background: transparent; cursor: default; }
+  .history-day.empty-slot { background: transparent; cursor: default; pointer-events: none; }
 
   /* ── Modals ── */
   .modal-overlay {
@@ -559,6 +551,46 @@
     white-space: nowrap;
   }
   .toast.show { opacity: 1; }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    body { padding: 0; }
+    .app {
+      border-radius: 0;
+      border-left: none; border-right: none; border-top: none;
+      padding: 1rem 1rem 2rem;
+      min-height: 100vh;
+    }
+    .app-title { font-size: 16px; }
+    .icon-btn { padding: 8px 10px; font-size: 0; gap: 0; }
+    .icon-btn i { font-size: 18px !important; }
+    .icon-btn span { display: none; }
+    .sync-status span { display: none; }
+    .day-nav { padding: 6px 10px; }
+    .day-nav-arrow { padding: 8px 12px; }
+    .today-btn { padding: 8px 12px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .field:first-child { grid-column: auto; }
+    .form-grid-2 { grid-template-columns: 1fr; }
+    .meal-selector { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+    .meal-opt { flex-shrink: 0; padding: 8px 16px; font-size: 13px; }
+    .field input, .field textarea, .field select { padding: 11px 12px; font-size: 16px; }
+    .field textarea { height: 64px; }
+    .form-actions { flex-direction: column; }
+    .btn-primary { justify-content: center; padding: 12px; font-size: 15px; }
+    .btn-secondary { padding: 12px; font-size: 15px; text-align: center; }
+    .entry-action-btn { opacity: 1; padding: 7px 8px; }
+    .entry-action-btn i { font-size: 16px !important; }
+    .log-entry { padding: 12px 10px; gap: 8px; }
+    .entry-qty { display: none; }
+    .history-grid { gap: 3px; }
+    .history-day { font-size: 12px; border-radius: 5px; }
+    .modal-overlay { align-items: flex-end; padding: 0; }
+    .modal { border-radius: 16px 16px 0 0; max-width: 100%; padding: 1.5rem 1.25rem 2rem; }
+    .modal .field input, .modal .field textarea { font-size: 16px; padding: 11px 12px; }
+    .modal-actions .btn-primary, .modal-actions .btn-secondary { padding: 12px; font-size: 15px; }
+    .drive-banner { flex-wrap: wrap; }
+  }
 </style>
 </head>
 <body>
@@ -572,6 +604,13 @@
       Food log
     </div>
     <div class="header-actions">
+      <div class="sync-status" id="sync-status" style="display:none">
+        <i class="ti ti-cloud" aria-hidden="true"></i>
+        <span id="sync-status-text"></span>
+      </div>
+      <button class="icon-btn" id="drive-btn" aria-label="Connect Google Drive">
+        <i class="ti ti-brand-google-drive" aria-hidden="true"></i> <span>Connect Drive</span>
+      </button>
       <button class="icon-btn" id="search-toggle-btn" aria-label="Search entries">
         <i class="ti ti-search" aria-hidden="true"></i> <span>Search</span>
       </button>
@@ -585,6 +624,16 @@
         <i class="ti ti-braces" aria-hidden="true"></i> <span>Copy JSON</span>
       </button>
     </div>
+  </div>
+
+  <!-- Drive connect banner (shown when not connected) -->
+  <div class="drive-banner" id="drive-banner" style="display:none">
+    <i class="ti ti-brand-google-drive" aria-hidden="true"></i>
+    <div class="drive-banner-text">
+      <strong>Sync across devices</strong>
+      <span>Connect Google Drive to keep your log in sync everywhere.</span>
+    </div>
+    <button class="drive-connect-btn" id="drive-banner-btn">Connect</button>
   </div>
 
   <!-- Search panel -->
@@ -719,6 +768,9 @@
 
 <script>
 (function(){
+  const CLIENT_ID = '705894638854-1esqj1ei8d0sj6i0otvablbag4l2v3r9.apps.googleusercontent.com';
+  const SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+  const DRIVE_FILE_NAME = 'food-log-data.json';
   const MEALS = ['breakfast','lunch','dinner','snack'];
   const MEAL_LABELS = { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack' };
 
@@ -727,8 +779,10 @@
   let editingEntryIdx = null;
   let selectedMeal = null;
   let editSelectedMeal = null;
+  let driveFileId = null;
+  let syncTimeout = null;
 
-  /* ── Storage ── */
+  /* ── Local storage ── */
   function dateKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
   function formatDay(d){
     const today = new Date(); today.setHours(0,0,0,0);
@@ -745,9 +799,12 @@
   function setStore(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
   function getLogs(){ return getStore('fl_logs',{}); }
   function getDayLogs(d){ return getLogs()[dateKey(d)]||[]; }
-  function saveDayLogs(d,e){ const a=getLogs(); a[dateKey(d)]=e; setStore('fl_logs',a); }
+  function saveDayLogs(d,entries){
+    const all=getLogs(); all[dateKey(d)]=entries; setStore('fl_logs',all);
+    scheduleSync();
+  }
   function getQuickButtons(){ return getStore('fl_quick',[]); }
-  function saveQuickButtons(b){ setStore('fl_quick',b); }
+  function saveQuickButtons(b){ setStore('fl_quick',b); scheduleSync(); }
 
   /* ── Toast ── */
   function showToast(msg){
@@ -755,6 +812,197 @@
     document.getElementById('toast-msg').textContent=msg;
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'),2200);
+  }
+
+  /* ── Sync status indicator ── */
+  function setSyncStatus(state, text){
+    const el = document.getElementById('sync-status');
+    const icon = el.querySelector('i');
+    const textEl = document.getElementById('sync-status-text');
+    el.style.display = 'flex';
+    el.className = 'sync-status ' + state;
+    textEl.textContent = text || '';
+    const icons = { syncing:'ti-refresh', ok:'ti-cloud-check', error:'ti-cloud-x', idle:'ti-cloud' };
+    icon.className = 'ti ' + (icons[state]||'ti-cloud');
+  }
+
+  /* ── Google Drive OAuth ── */
+  function getToken(){ return localStorage.getItem('fl_drive_token'); }
+  function setToken(t){ localStorage.setItem('fl_drive_token', t); }
+  function clearToken(){ localStorage.removeItem('fl_drive_token'); localStorage.removeItem('fl_drive_file_id'); }
+
+  function updateDriveUI(){
+    const token = getToken();
+    const driveBtn = document.getElementById('drive-btn');
+    const banner = document.getElementById('drive-banner');
+    if(token){
+      driveBtn.innerHTML = '<i class="ti ti-brand-google-drive" aria-hidden="true"></i> <span>Disconnect</span>';
+      driveBtn.classList.add('active');
+      banner.style.display = 'none';
+    } else {
+      driveBtn.innerHTML = '<i class="ti ti-brand-google-drive" aria-hidden="true"></i> <span>Connect Drive</span>';
+      driveBtn.classList.remove('active');
+      banner.style.display = 'flex';
+    }
+  }
+
+  function connectDrive(){
+    const redirectUri = window.location.href.split('?')[0].split('#')[0];
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      redirect_uri: redirectUri,
+      response_type: 'token',
+      scope: SCOPE,
+      prompt: 'consent'
+    });
+    const popup = window.open(
+      'https://accounts.google.com/o/oauth2/v2/auth?' + params,
+      'drive-auth',
+      'width=500,height=620,left='+(screen.width/2-250)+',top='+(screen.height/2-310)
+    );
+    // Poll for redirect back with token in hash
+    const poll = setInterval(()=>{
+      try {
+        if(!popup || popup.closed){ clearInterval(poll); return; }
+        const hash = popup.location.hash;
+        if(hash && hash.includes('access_token')){
+          clearInterval(poll);
+          popup.close();
+          const p = new URLSearchParams(hash.slice(1));
+          const token = p.get('access_token');
+          const expiresIn = parseInt(p.get('expires_in')||'3600');
+          setToken(token);
+          // Schedule token expiry clear
+          setTimeout(()=>{ clearToken(); updateDriveUI(); setSyncStatus('idle',''); showToast('Drive session expired — please reconnect'); }, expiresIn*1000);
+          updateDriveUI();
+          driveFileId = localStorage.getItem('fl_drive_file_id') || null;
+          loadFromDrive().then(()=>{ showToast('Google Drive connected'); });
+        }
+      } catch(e){ /* cross-origin, keep polling */ }
+    }, 300);
+  }
+
+  function disconnectDrive(){
+    clearToken();
+    driveFileId = null;
+    updateDriveUI();
+    document.getElementById('sync-status').style.display = 'none';
+    showToast('Disconnected from Google Drive');
+  }
+
+  document.getElementById('drive-btn').addEventListener('click',()=>{
+    if(getToken()) disconnectDrive(); else connectDrive();
+  });
+  document.getElementById('drive-banner-btn').addEventListener('click', connectDrive);
+
+  /* ── Drive API calls ── */
+  async function driveRequest(url, options={}){
+    const token = getToken();
+    if(!token) return null;
+    const res = await fetch(url, {
+      ...options,
+      headers: { 'Authorization': 'Bearer '+token, ...(options.headers||{}) }
+    });
+    if(res.status===401){ clearToken(); updateDriveUI(); showToast('Drive session expired — please reconnect'); return null; }
+    return res;
+  }
+
+  async function findDriveFile(){
+    const res = await driveRequest(
+      `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'&fields=files(id,name)`
+    );
+    if(!res) return null;
+    const data = await res.json();
+    return data.files && data.files.length ? data.files[0].id : null;
+  }
+
+  async function readDriveFile(fileId){
+    const res = await driveRequest(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`
+    );
+    if(!res || !res.ok) return null;
+    try { return await res.json(); } catch(e){ return null; }
+  }
+
+  async function writeDriveFile(data){
+    const token = getToken();
+    if(!token) return;
+    const body = JSON.stringify(data);
+    let res;
+    if(driveFileId){
+      res = await driveRequest(
+        `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,
+        { method:'PATCH', headers:{'Content-Type':'application/json'}, body }
+      );
+    } else {
+      // Create in appDataFolder
+      const meta = JSON.stringify({ name: DRIVE_FILE_NAME, parents: ['appDataFolder'] });
+      const form = new FormData();
+      form.append('metadata', new Blob([meta],{type:'application/json'}));
+      form.append('file', new Blob([body],{type:'application/json'}));
+      res = await fetch(
+        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+        { method:'POST', headers:{'Authorization':'Bearer '+token}, body: form }
+      );
+      if(res && res.ok){
+        const d = await res.json();
+        driveFileId = d.id;
+        localStorage.setItem('fl_drive_file_id', driveFileId);
+      }
+    }
+    return res;
+  }
+
+  async function loadFromDrive(){
+    if(!getToken()) return;
+    setSyncStatus('syncing','Syncing…');
+    try {
+      // Find file if we don't have the ID cached
+      if(!driveFileId){
+        driveFileId = await findDriveFile();
+        if(driveFileId) localStorage.setItem('fl_drive_file_id', driveFileId);
+      }
+      if(!driveFileId){ setSyncStatus('ok','Synced'); return; } // no file yet, nothing to load
+      const remote = await readDriveFile(driveFileId);
+      if(!remote){ setSyncStatus('ok','Synced'); return; }
+      // Merge: union of all days, remote wins on per-day conflict (last write wins)
+      const local = getLogs();
+      const localQuick = getQuickButtons();
+      const merged = Object.assign({}, local, remote.logs||{});
+      setStore('fl_logs', merged);
+      // Merge quick buttons: remote wins if present
+      if(remote.quickButtons && remote.quickButtons.length){
+        setStore('fl_quick', remote.quickButtons);
+      }
+      renderLog(); renderHistory(); renderQuickButtons();
+      setSyncStatus('ok','Synced');
+    } catch(e){
+      console.error('Drive load error', e);
+      setSyncStatus('error','Sync error');
+    }
+  }
+
+  async function pushToDrive(){
+    if(!getToken()) return;
+    setSyncStatus('syncing','Saving…');
+    try {
+      const payload = { logs: getLogs(), quickButtons: getQuickButtons(), updatedAt: new Date().toISOString() };
+      const res = await writeDriveFile(payload);
+      if(res && (res.ok || res.status===200)){
+        setSyncStatus('ok','Saved');
+      } else {
+        setSyncStatus('error','Sync error');
+      }
+    } catch(e){
+      console.error('Drive push error', e);
+      setSyncStatus('error','Sync error');
+    }
+  }
+
+  function scheduleSync(){
+    if(!getToken()) return;
+    if(syncTimeout) clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(pushToDrive, 1500); // debounce 1.5s
   }
 
   /* ── Meal selector ── */
@@ -770,22 +1018,13 @@
       });
     });
   }
-
   function setMealSelector(containerId, meal){
     document.getElementById(containerId).querySelectorAll('.meal-opt').forEach(b=>{
       b.className = 'meal-opt' + (meal && b.dataset.meal===meal ? ' sel-'+meal : '');
     });
   }
-
-  initMealSelector('meal-selector', meal=>{
-    selectedMeal = (selectedMeal===meal) ? null : meal;
-    return selectedMeal;
-  });
-
-  initMealSelector('edit-meal-selector', meal=>{
-    editSelectedMeal = (editSelectedMeal===meal) ? null : meal;
-    return editSelectedMeal;
-  });
+  initMealSelector('meal-selector', meal=>{ selectedMeal=(selectedMeal===meal)?null:meal; return selectedMeal; });
+  initMealSelector('edit-meal-selector', meal=>{ editSelectedMeal=(editSelectedMeal===meal)?null:meal; return editSelectedMeal; });
 
   /* ── Day nav ── */
   function updateDayLabel(){
@@ -793,7 +1032,6 @@
     document.getElementById('day-label').textContent = label;
     document.getElementById('log-label').textContent = label==='Today' ? "Today's log" : label+"'s log";
   }
-
   document.getElementById('prev-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()-1); updateDayLabel(); renderLog(); renderHistory(); });
   document.getElementById('next-day').addEventListener('click',()=>{ currentDate=new Date(currentDate); currentDate.setDate(currentDate.getDate()+1); updateDayLabel(); renderLog(); renderHistory(); });
   document.getElementById('today-btn').addEventListener('click',()=>{ currentDate=new Date(); currentDate.setHours(0,0,0,0); updateDayLabel(); renderLog(); renderHistory(); });
@@ -810,58 +1048,36 @@
     }
     pill.style.display='inline-block';
     pill.textContent=entries.length+(entries.length===1?' entry':' entries');
-
-    // Group by meal
-    const groups = {};
-    const order = ['breakfast','lunch','dinner','snack','other'];
-    entries.forEach((e,i)=>{
-      const key = MEALS.includes(e.meal) ? e.meal : 'other';
-      if(!groups[key]) groups[key]=[];
-      groups[key].push({e,i});
-    });
-
-    const hasMeals = Object.keys(groups).some(k=>k!=='other') || Object.keys(groups).length>1 || (groups['other']&&entries.some(e=>e.meal));
-    const useGroups = hasMeals || entries.some(e=>e.meal);
-
-    let html = '';
-    if(useGroups && Object.keys(groups).length>0){
+    const groups={};
+    const order=['breakfast','lunch','dinner','snack','other'];
+    entries.forEach((e,i)=>{ const key=MEALS.includes(e.meal)?e.meal:'other'; if(!groups[key])groups[key]=[]; groups[key].push({e,i}); });
+    const useGroups=entries.some(e=>e.meal);
+    let html='';
+    if(useGroups){
       order.forEach(key=>{
         if(!groups[key]) return;
-        const label = key==='other' ? 'Other' : MEAL_LABELS[key];
-        html += `<div class="meal-group">
-          <div class="meal-group-label lbl-${key}">${label}</div>
-          <div class="log-list">`;
+        html+=`<div class="meal-group"><div class="meal-group-label lbl-${key}">${key==='other'?'Other':MEAL_LABELS[key]}</div><div class="log-list">`;
         groups[key].forEach(({e,i})=>{ html+=entryHTML(e,i); });
-        html += `</div></div>`;
+        html+=`</div></div>`;
       });
     } else {
-      html = '<div class="log-list">'+entries.map((e,i)=>entryHTML(e,i)).join('')+'</div>';
+      html='<div class="log-list">'+entries.map((e,i)=>entryHTML(e,i)).join('')+'</div>';
     }
-
-    list.innerHTML = html;
-    list.querySelectorAll('.entry-action-btn.edit').forEach(btn=>{
-      btn.addEventListener('click',()=>openEntryModal(+btn.dataset.idx));
-    });
-    list.querySelectorAll('.entry-action-btn.dup').forEach(btn=>{
-      btn.addEventListener('click',()=>duplicateEntry(+btn.dataset.idx));
-    });
+    list.innerHTML=html;
+    list.querySelectorAll('.entry-action-btn.edit').forEach(btn=>{ btn.addEventListener('click',()=>openEntryModal(+btn.dataset.idx)); });
+    list.querySelectorAll('.entry-action-btn.dup').forEach(btn=>{ btn.addEventListener('click',()=>duplicateEntry(+btn.dataset.idx)); });
     list.querySelectorAll('.entry-action-btn.del').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const e=getDayLogs(currentDate); e.splice(+btn.dataset.idx,1); saveDayLogs(currentDate,e); renderLog(); renderHistory();
-      });
+      btn.addEventListener('click',()=>{ const e=getDayLogs(currentDate); e.splice(+btn.dataset.idx,1); saveDayLogs(currentDate,e); renderLog(); renderHistory(); });
     });
   }
 
   function entryHTML(e,i){
-    const mealTag = MEALS.includes(e.meal) ? `<span class="meal-tag tag-${e.meal}">${MEAL_LABELS[e.meal]}</span>` : '';
-    const notes = e.notes ? `<div class="entry-notes">${esc(e.notes)}</div>` : '';
+    const mealTag=MEALS.includes(e.meal)?`<span class="meal-tag tag-${e.meal}">${MEAL_LABELS[e.meal]}</span>`:'';
+    const notes=e.notes?`<div class="entry-notes">${esc(e.notes)}</div>`:'';
     return `<div class="log-entry">
       <span class="entry-time">${esc(e.time)||'--:--'}</span>
       <span class="entry-dot"></span>
-      <div class="entry-body">
-        <div class="entry-food">${esc(e.food)}</div>
-        ${notes}
-      </div>
+      <div class="entry-body"><div class="entry-food">${esc(e.food)}</div>${notes}</div>
       ${mealTag}
       <span class="entry-qty">${esc(e.qty)}</span>
       <div class="entry-actions">
@@ -872,11 +1088,9 @@
     </div>`;
   }
 
-  /* ── Duplicate entry ── */
   function duplicateEntry(idx){
-    const entries = getDayLogs(currentDate);
-    const src = entries[idx];
-    const copy = { ...src, time: nowTime() };
+    const entries=getDayLogs(currentDate);
+    const copy={...entries[idx], time:nowTime()};
     entries.push(copy);
     entries.sort((a,b)=>a.time.localeCompare(b.time));
     saveDayLogs(currentDate,entries);
@@ -884,7 +1098,7 @@
     showToast('Entry duplicated');
   }
 
-  /* ── Quick-add buttons ── */
+  /* ── Quick buttons ── */
   function renderQuickButtons(){
     const btns=getQuickButtons();
     const container=document.getElementById('quick-buttons');
@@ -931,8 +1145,7 @@
     document.getElementById('qb-label').focus();
   }
   function closeModal(){ document.getElementById('modal').classList.remove('open'); }
-
-  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal-cancel').addEventListener('click',closeModal);
   document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
   document.getElementById('modal-save').addEventListener('click',()=>{
     const label=document.getElementById('qb-label').value.trim();
@@ -942,16 +1155,14 @@
     const btns=getQuickButtons();
     if(editingQuickIdx!==null){ btns[editingQuickIdx]={label,food,qty}; } else { btns.push({label,food,qty}); }
     saveQuickButtons(btns); renderQuickButtons(); closeModal();
-    showToast(editingQuickIdx!==null ? 'Button updated' : 'Button added');
+    showToast(editingQuickIdx!==null?'Button updated':'Button added');
   });
   document.getElementById('modal-delete').addEventListener('click',()=>{
     if(editingQuickIdx===null) return;
     const btns=getQuickButtons(); btns.splice(editingQuickIdx,1); saveQuickButtons(btns); renderQuickButtons(); closeModal();
     showToast('Button removed');
   });
-  ['qb-label','qb-food','qb-qty'].forEach(id=>{
-    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('modal-save').click(); });
-  });
+  ['qb-label','qb-food','qb-qty'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('modal-save').click(); }); });
 
   /* ── Entry edit modal ── */
   function openEntryModal(idx){
@@ -961,26 +1172,19 @@
     document.getElementById('edit-food').value=e.food||'';
     document.getElementById('edit-qty').value=e.qty||'';
     document.getElementById('edit-notes').value=e.notes||'';
-    editSelectedMeal = e.meal||null;
-    setMealSelector('edit-meal-selector', editSelectedMeal);
+    editSelectedMeal=e.meal||null;
+    setMealSelector('edit-meal-selector',editSelectedMeal);
     document.getElementById('entry-modal').classList.add('open');
     document.getElementById('edit-food').focus();
   }
   function closeEntryModal(){ document.getElementById('entry-modal').classList.remove('open'); }
-
-  document.getElementById('entry-modal-cancel').addEventListener('click', closeEntryModal);
+  document.getElementById('entry-modal-cancel').addEventListener('click',closeEntryModal);
   document.getElementById('entry-modal').addEventListener('click',e=>{ if(e.target===document.getElementById('entry-modal')) closeEntryModal(); });
   document.getElementById('entry-modal-save').addEventListener('click',()=>{
     const food=document.getElementById('edit-food').value.trim();
     if(!food) return;
     const entries=getDayLogs(currentDate);
-    entries[editingEntryIdx]={
-      time: document.getElementById('edit-time').value||nowTime(),
-      food,
-      qty: document.getElementById('edit-qty').value.trim()||'—',
-      meal: editSelectedMeal||null,
-      notes: document.getElementById('edit-notes').value.trim()||null
-    };
+    entries[editingEntryIdx]={ time:document.getElementById('edit-time').value||nowTime(), food, qty:document.getElementById('edit-qty').value.trim()||'—', meal:editSelectedMeal||null, notes:document.getElementById('edit-notes').value.trim()||null };
     entries.sort((a,b)=>a.time.localeCompare(b.time));
     saveDayLogs(currentDate,entries);
     closeEntryModal(); renderLog();
@@ -993,26 +1197,15 @@
     closeEntryModal(); renderLog(); renderHistory();
     showToast('Entry deleted');
   });
-  ['edit-food','edit-qty','edit-time'].forEach(id=>{
-    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('entry-modal-save').click(); });
-  });
+  ['edit-food','edit-qty','edit-time'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('entry-modal-save').click(); }); });
 
-  /* ── Escape closes any open modal ── */
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'){ closeModal(); closeEntryModal(); }
-  });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeEntryModal(); } });
 
   /* ── Log form ── */
   document.getElementById('log-btn').addEventListener('click',()=>{
     const food=document.getElementById('entry-food').value.trim();
     if(!food){ document.getElementById('entry-food').focus(); return; }
-    const entry={
-      time: document.getElementById('entry-time').value||nowTime(),
-      food,
-      qty: document.getElementById('entry-qty').value.trim()||'—',
-      meal: selectedMeal||null,
-      notes: document.getElementById('entry-notes').value.trim()||null
-    };
+    const entry={ time:document.getElementById('entry-time').value||nowTime(), food, qty:document.getElementById('entry-qty').value.trim()||'—', meal:selectedMeal||null, notes:document.getElementById('entry-notes').value.trim()||null };
     const entries=getDayLogs(currentDate); entries.push(entry);
     entries.sort((a,b)=>a.time.localeCompare(b.time));
     saveDayLogs(currentDate,entries);
@@ -1020,8 +1213,7 @@
     document.getElementById('entry-qty').value='';
     document.getElementById('entry-time').value='';
     document.getElementById('entry-notes').value='';
-    selectedMeal=null;
-    setMealSelector('meal-selector',null);
+    selectedMeal=null; setMealSelector('meal-selector',null);
     renderLog(); renderHistory();
     document.getElementById('entry-food').focus();
   });
@@ -1031,28 +1223,12 @@
     document.getElementById('entry-qty').value='';
     document.getElementById('entry-time').value='';
     document.getElementById('entry-notes').value='';
-    selectedMeal=null;
-    setMealSelector('meal-selector',null);
+    selectedMeal=null; setMealSelector('meal-selector',null);
   });
 
-  ['entry-food','entry-qty','entry-time'].forEach(id=>{
-    document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); });
-  });
+  ['entry-food','entry-qty','entry-time'].forEach(id=>{ document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('log-btn').click(); }); });
 
-  /* ── Copy day JSON ── */
-  document.getElementById('json-btn').addEventListener('click',()=>{
-    const entries=getDayLogs(currentDate);
-    if(entries.length===0){ showToast('Nothing logged for this day'); return; }
-    const json=JSON.stringify({ date: dateKey(currentDate), entries }, null, 2);
-    navigator.clipboard.writeText(json).then(()=>{
-      const btn=document.getElementById('json-btn');
-      btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> <span>Copied!</span>';
-      showToast('Day log copied as JSON');
-      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> <span>Copy JSON</span>'; },2000);
-    }).catch(()=>{ showToast('Copy failed — try again'); });
-  });
-
-  /* ── Copy day CSV ── */
+  /* ── Copy CSV ── */
   document.getElementById('export-btn').addEventListener('click',()=>{
     const entries=getDayLogs(currentDate);
     if(entries.length===0){ showToast('Nothing logged for this day'); return; }
@@ -1068,64 +1244,52 @@
     }).catch(()=>{ showToast('Copy failed — try again'); });
   });
 
+  /* ── Copy JSON ── */
+  document.getElementById('json-btn').addEventListener('click',()=>{
+    const entries=getDayLogs(currentDate);
+    if(entries.length===0){ showToast('Nothing logged for this day'); return; }
+    const json=JSON.stringify({ date:dateKey(currentDate), entries },null,2);
+    navigator.clipboard.writeText(json).then(()=>{
+      const btn=document.getElementById('json-btn');
+      btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> <span>Copied!</span>';
+      showToast('Day log copied as JSON');
+      setTimeout(()=>{ btn.innerHTML='<i class="ti ti-braces" aria-hidden="true"></i> <span>Copy JSON</span>'; },2000);
+    }).catch(()=>{ showToast('Copy failed — try again'); });
+  });
+
   /* ── Search ── */
   document.getElementById('search-toggle-btn').addEventListener('click',()=>{
     const panel=document.getElementById('search-panel');
-    const isOpen = panel.style.display!=='none';
-    panel.style.display = isOpen ? 'none' : 'block';
+    const isOpen=panel.style.display!=='none';
+    panel.style.display=isOpen?'none':'block';
     document.getElementById('search-toggle-btn').classList.toggle('active',!isOpen);
-    if(!isOpen){
-      document.getElementById('search-input').focus();
-      renderSearch('');
-    } else {
-      document.getElementById('search-input').value='';
-      document.getElementById('search-results').innerHTML='';
-    }
-    // close history if open
+    if(!isOpen){ document.getElementById('search-input').focus(); renderSearch(''); }
+    else { document.getElementById('search-input').value=''; document.getElementById('search-results').innerHTML=''; }
     document.getElementById('history-panel').style.display='none';
     document.getElementById('history-toggle-btn').classList.remove('active');
   });
-
-  document.getElementById('search-input').addEventListener('input', function(){
-    renderSearch(this.value.trim());
-  });
+  document.getElementById('search-input').addEventListener('input',function(){ renderSearch(this.value.trim()); });
 
   function renderSearch(query){
-    const resultsEl = document.getElementById('search-results');
+    const resultsEl=document.getElementById('search-results');
     if(!query){ resultsEl.innerHTML=''; return; }
-    const allLogs = getLogs();
-    const q = query.toLowerCase();
-    const matches = [];
+    const allLogs=getLogs(); const q=query.toLowerCase(); const matches=[];
     Object.keys(allLogs).sort().reverse().forEach(day=>{
-      (allLogs[day]||[]).forEach(e=>{
-        if((e.food||'').toLowerCase().includes(q) || (e.notes||'').toLowerCase().includes(q)){
-          matches.push({day,e});
-        }
-      });
+      (allLogs[day]||[]).forEach(e=>{ if((e.food||'').toLowerCase().includes(q)||(e.notes||'').toLowerCase().includes(q)) matches.push({day,e}); });
     });
-    if(matches.length===0){
-      resultsEl.innerHTML='<div class="search-empty">No entries found for "'+esc(query)+'"</div>';
-      return;
-    }
-    resultsEl.innerHTML = matches.slice(0,50).map(({day,e})=>{
-      const d = new Date(day+'T00:00:00');
-      const dayStr = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-      const mealTag = MEALS.includes(e.meal) ? `<span class="meal-tag tag-${e.meal}" style="margin-left:6px">${MEAL_LABELS[e.meal]}</span>` : '';
-      const notes = e.notes ? `<div class="entry-notes" style="margin-top:2px">${esc(e.notes)}</div>` : '';
-      return `<div class="search-result-entry" data-day="${day}">
-        <span class="search-date">${dayStr}</span>
-        <div class="entry-body">
-          <div class="entry-food">${esc(e.food)} ${mealTag}</div>
-          ${notes}
-        </div>
-        <span class="entry-qty">${esc(e.qty)}</span>
-      </div>`;
+    if(matches.length===0){ resultsEl.innerHTML='<div class="search-empty">No entries found for "'+esc(query)+'"</div>'; return; }
+    resultsEl.innerHTML=matches.slice(0,50).map(({day,e})=>{
+      const [dy,dm,dd]=day.split('-').map(Number);
+      const dObj=new Date(dy,dm-1,dd);
+      const dayStr=dObj.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      const mealTag=MEALS.includes(e.meal)?`<span class="meal-tag tag-${e.meal}" style="margin-left:6px">${MEAL_LABELS[e.meal]}</span>`:'';
+      const notes=e.notes?`<div class="entry-notes" style="margin-top:2px">${esc(e.notes)}</div>`:'';
+      return `<div class="search-result-entry" data-day="${day}"><span class="search-date">${dayStr}</span><div class="entry-body"><div class="entry-food">${esc(e.food)} ${mealTag}</div>${notes}</div><span class="entry-qty">${esc(e.qty)}</span></div>`;
     }).join('');
-
     resultsEl.querySelectorAll('.search-result-entry').forEach(el=>{
       el.addEventListener('click',()=>{
-        const [sy,sm,sd] = el.dataset.day.split('-').map(Number);
-        currentDate = new Date(sy, sm-1, sd);
+        const [sy,sm,sd]=el.dataset.day.split('-').map(Number);
+        currentDate=new Date(sy,sm-1,sd);
         updateDayLabel(); renderLog(); renderHistory();
         document.getElementById('search-panel').style.display='none';
         document.getElementById('search-toggle-btn').classList.remove('active');
@@ -1138,66 +1302,45 @@
   /* ── History ── */
   document.getElementById('history-toggle-btn').addEventListener('click',()=>{
     const panel=document.getElementById('history-panel');
-    const isOpen = panel.style.display!=='none';
-    panel.style.display = isOpen ? 'none' : 'block';
+    const isOpen=panel.style.display!=='none';
+    panel.style.display=isOpen?'none':'block';
     document.getElementById('history-toggle-btn').classList.toggle('active',!isOpen);
     if(!isOpen) renderHistory();
-    // close search if open
     document.getElementById('search-panel').style.display='none';
     document.getElementById('search-toggle-btn').classList.remove('active');
   });
 
   function renderHistory(){
-    const grid = document.getElementById('history-grid');
+    const grid=document.getElementById('history-grid');
     if(document.getElementById('history-panel').style.display==='none') return;
-
-    const allLogs = getLogs();
-    const today = new Date(); today.setHours(0,0,0,0);
-    const todayKey = dateKey(today);
-    const currentKey = dateKey(currentDate);
-
-    // End on the Sunday on or after today so today is always visible
-    const todayDow = today.getDay(); // 0=Sun,1=Mon...
-    const daysToSunday = todayDow===0 ? 0 : 7 - todayDow;
-    const end = new Date(today);
-    end.setDate(today.getDate() + daysToSunday);
-
-    // Start on the Monday 10 weeks before that Sunday
-    const start = new Date(end);
-    start.setDate(end.getDate() - 69);
-
-    const totalDays = Math.round((end - start) / 86400000) + 1; // always 70
-
-    const dows = ['M','T','W','T','F','S','S'];
-    let html = dows.map(d=>`<div class="history-dow">${d}</div>`).join('');
-
-    let cursor = new Date(start);
+    const allLogs=getLogs();
+    const today=new Date(); today.setHours(0,0,0,0);
+    const todayKey=dateKey(today);
+    const currentKey=dateKey(currentDate);
+    const todayDow=today.getDay();
+    const daysToSunday=todayDow===0?0:7-todayDow;
+    const end=new Date(today); end.setDate(today.getDate()+daysToSunday);
+    const start=new Date(end); start.setDate(end.getDate()-69);
+    const totalDays=Math.round((end-start)/86400000)+1;
+    const dows=['M','T','W','T','F','S','S'];
+    let html=dows.map(d=>`<div class="history-dow">${d}</div>`).join('');
+    let cursor=new Date(start);
     for(let i=0;i<totalDays;i++){
-      // Build key from local date parts to avoid UTC offset issues
-      const y = cursor.getFullYear();
-      const m = String(cursor.getMonth()+1).padStart(2,'0');
-      const d = String(cursor.getDate()).padStart(2,'0');
-      const key = `${y}-${m}-${d}`;
-      const hasEntries = allLogs[key]&&allLogs[key].length>0;
-      const isToday = key===todayKey;
-      const isCurrent = key===currentKey;
-      const isFuture = cursor > today;
-      let cls = 'history-day';
-      if(isCurrent) cls+=' is-current';
-      else if(hasEntries) cls+=' has-entries';
-      else if(isToday) cls+=' is-today';
+      const y=cursor.getFullYear(); const m=String(cursor.getMonth()+1).padStart(2,'0'); const d=String(cursor.getDate()).padStart(2,'0');
+      const key=`${y}-${m}-${d}`;
+      const hasEntries=allLogs[key]&&allLogs[key].length>0;
+      const isToday=key===todayKey; const isCurrent=key===currentKey; const isFuture=cursor>today;
+      let cls='history-day';
+      if(isCurrent) cls+=' is-current'; else if(hasEntries) cls+=' has-entries'; else if(isToday) cls+=' is-today';
       if(isFuture) cls+=' empty-slot';
-      const dayNum = cursor.getDate();
-      html += `<button class="${cls}" data-key="${key}" ${isFuture?'disabled':''} aria-label="${cursor.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}">${dayNum}</button>`;
+      html+=`<button class="${cls}" data-key="${key}" ${isFuture?'disabled':''} aria-label="${cursor.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}">${cursor.getDate()}</button>`;
       cursor.setDate(cursor.getDate()+1);
     }
-
-    grid.innerHTML = html;
-    // Use same local-date approach when navigating to a clicked day
+    grid.innerHTML=html;
     grid.querySelectorAll('.history-day:not(.empty-slot):not([disabled])').forEach(btn=>{
       btn.addEventListener('click',()=>{
-        const [y,mo,d] = btn.dataset.key.split('-').map(Number);
-        currentDate = new Date(y, mo-1, d);
+        const [y,mo,d]=btn.dataset.key.split('-').map(Number);
+        currentDate=new Date(y,mo-1,d);
         updateDayLabel(); renderLog(); renderHistory();
       });
     });
@@ -1208,6 +1351,14 @@
   updateDayLabel();
   renderLog();
   renderQuickButtons();
+  updateDriveUI();
+
+  // If already connected, restore file ID and load from Drive
+  if(getToken()){
+    driveFileId = localStorage.getItem('fl_drive_file_id') || null;
+    loadFromDrive();
+  }
+
 })();
 </script>
 </body>
