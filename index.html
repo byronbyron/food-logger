@@ -37,6 +37,8 @@
     --meal-dinner-bg: #F5F3FF;
     --meal-snack: #EC4899;
     --meal-snack-bg: #FDF2F8;
+    --meal-drinks: #0EA5E9;
+    --meal-drinks-bg: #F0F9FF;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -57,6 +59,7 @@
       --meal-lunch-bg: #0a1a2e;
       --meal-dinner-bg: #1a0a2e;
       --meal-snack-bg: #2e0a1a;
+      --meal-drinks-bg: #001a2e;
     }
   }
 
@@ -322,6 +325,7 @@
   .meal-opt.sel-lunch { background: var(--meal-lunch-bg); color: var(--meal-lunch); border-color: var(--meal-lunch); font-weight: 500; }
   .meal-opt.sel-dinner { background: var(--meal-dinner-bg); color: var(--meal-dinner); border-color: var(--meal-dinner); font-weight: 500; }
   .meal-opt.sel-snack { background: var(--meal-snack-bg); color: var(--meal-snack); border-color: var(--meal-snack); font-weight: 500; }
+  .meal-opt.sel-drinks { background: var(--meal-drinks-bg); color: var(--meal-drinks); border-color: var(--meal-drinks); font-weight: 500; }
 
   .form-actions { display: flex; gap: 8px; }
   .btn-primary {
@@ -377,6 +381,7 @@
   .meal-group-label.lbl-lunch { color: var(--meal-lunch); }
   .meal-group-label.lbl-dinner { color: var(--meal-dinner); }
   .meal-group-label.lbl-snack { color: var(--meal-snack); }
+  .meal-group-label.lbl-drinks { color: var(--meal-drinks); }
   .meal-group-label.lbl-other { color: var(--text-tertiary); }
 
   .log-list {
@@ -424,6 +429,7 @@
   .tag-lunch { background: var(--meal-lunch-bg); color: var(--meal-lunch); }
   .tag-dinner { background: var(--meal-dinner-bg); color: var(--meal-dinner); }
   .tag-snack { background: var(--meal-snack-bg); color: var(--meal-snack); }
+  .tag-drinks { background: var(--meal-drinks-bg); color: var(--meal-drinks); }
 
   .entry-actions { display: flex; gap: 2px; align-self: center; }
   .entry-action-btn {
@@ -689,6 +695,7 @@
           <button class="meal-opt" data-meal="lunch" type="button">Lunch</button>
           <button class="meal-opt" data-meal="dinner" type="button">Dinner</button>
           <button class="meal-opt" data-meal="snack" type="button">Snack</button>
+          <button class="meal-opt" data-meal="drinks" type="button">Drinks</button>
         </div>
       </div>
       <div class="field">
@@ -748,6 +755,7 @@
         <button class="meal-opt" data-meal="lunch" type="button">Lunch</button>
         <button class="meal-opt" data-meal="dinner" type="button">Dinner</button>
         <button class="meal-opt" data-meal="snack" type="button">Snack</button>
+        <button class="meal-opt" data-meal="drinks" type="button">Drinks</button>
       </div>
     </div>
     <div class="field" style="margin-bottom:0">
@@ -772,8 +780,8 @@
   const CLIENT_ID = '705894638854-1esqj1ei8d0sj6i0otvablbag4l2v3r9.apps.googleusercontent.com';
   const SCOPE = 'https://www.googleapis.com/auth/drive.file';
   const DRIVE_FILE_NAME = 'food-log-data.json';
-  const MEALS = ['breakfast','lunch','dinner','snack'];
-  const MEAL_LABELS = { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack' };
+  const MEALS = ['breakfast','lunch','dinner','snack','drinks'];
+  const MEAL_LABELS = { breakfast:'Breakfast', lunch:'Lunch', dinner:'Dinner', snack:'Snack', drinks:'Drinks' };
 
   let currentDate = new Date(); currentDate.setHours(0,0,0,0);
   let editingQuickIdx = null;
@@ -874,16 +882,28 @@
     setToken(token);
     localStorage.removeItem('fl_oauth_return');
     // Schedule token expiry clear
-    setTimeout(()=>{ clearToken(); updateDriveUI(); setSyncStatus('idle',''); showToast('Drive session expired — reconnect via the Drive button'); }, expiresIn*1000);
+    const expiry = Date.now() + expiresIn * 1000;
+    localStorage.setItem('fl_token_expiry', expiry);
+    const msUntilRefresh = Math.max((expiresIn - 300) * 1000, 0);
+    setTimeout(()=>{ silentReauthCheck(); }, msUntilRefresh);
     return true;
   }
 
   function disconnectDrive(){
     clearToken();
+    localStorage.removeItem('fl_token_expiry');
     driveFileId = null;
     updateDriveUI();
     document.getElementById('sync-status').style.display = 'none';
     showToast('Disconnected from Google Drive');
+  }
+
+  function silentReauthCheck(){
+    const expiry = parseInt(localStorage.getItem('fl_token_expiry')||'0');
+    if(!expiry || Date.now() < expiry) return; // still valid
+    clearToken();
+    updateDriveUI();
+    showToast('Drive session expired — tap Connect Drive to reconnect');
   }
 
   document.getElementById('drive-btn').addEventListener('click',()=>{
@@ -1045,7 +1065,7 @@
     pill.style.display='inline-block';
     pill.textContent=entries.length+(entries.length===1?' entry':' entries');
     const groups={};
-    const order=['breakfast','lunch','dinner','snack','other'];
+    const order=['breakfast','lunch','dinner','snack','drinks','other'];
     entries.forEach((e,i)=>{ const key=MEALS.includes(e.meal)?e.meal:'other'; if(!groups[key])groups[key]=[]; groups[key].push({e,i}); });
     const useGroups=entries.some(e=>e.meal);
     let html='';
@@ -1207,7 +1227,7 @@
     saveDayLogs(currentDate,entries);
     document.getElementById('entry-food').value='';
     document.getElementById('entry-qty').value='';
-    document.getElementById('entry-time').value='';
+    document.getElementById('entry-time').value=nowTime();
     document.getElementById('entry-notes').value='';
     selectedMeal=null; setMealSelector('meal-selector',null);
     renderLog(); renderHistory();
@@ -1217,7 +1237,7 @@
   document.getElementById('clear-btn').addEventListener('click',()=>{
     document.getElementById('entry-food').value='';
     document.getElementById('entry-qty').value='';
-    document.getElementById('entry-time').value='';
+    document.getElementById('entry-time').value=nowTime();
     document.getElementById('entry-notes').value='';
     selectedMeal=null; setMealSelector('meal-selector',null);
   });
@@ -1340,8 +1360,18 @@
     driveFileId = localStorage.getItem('fl_drive_file_id') || null;
     loadFromDrive().then(()=>{ showToast('Google Drive connected'); });
   } else if(getToken()){
-    driveFileId = localStorage.getItem('fl_drive_file_id') || null;
-    loadFromDrive();
+    const expiry = parseInt(localStorage.getItem('fl_token_expiry')||'0');
+    if(expiry && Date.now() > expiry){
+      clearToken();
+      updateDriveUI();
+    } else {
+      driveFileId = localStorage.getItem('fl_drive_file_id') || null;
+      loadFromDrive();
+      if(expiry){
+        const msUntilRefresh = Math.max(expiry - Date.now() - 300000, 0);
+        setTimeout(()=>{ silentReauthCheck(); }, msUntilRefresh);
+      }
+    }
   }
 
 })();
