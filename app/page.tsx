@@ -40,6 +40,8 @@ export default function Home() {
 
   const toastRef = useRef<ToastHandle>(null);
   const showToast = (msg: string) => toastRef.current?.show(msg);
+  const showUndoToast = (msg: string, onUndo: () => void) =>
+    toastRef.current?.showWithAction(msg, 'Undo', onUndo);
 
   const key = dateKey(currentDate);
   const entries = getDayLogs(key);
@@ -58,25 +60,30 @@ export default function Home() {
 
   const handleSaveEntry = (updated: LogEntry) => {
     if (editingEntryIdx === null) return;
+    const previous = entries[editingEntryIdx];
+    const previousEntries = entries;
     const next = [...entries];
     next[editingEntryIdx] = updated;
     next.sort((a, b) => a.time.localeCompare(b.time));
     saveDayLogs(key, next);
     setEntryModalOpen(false);
-    showToast('Entry updated');
+    showUndoToast('Entry updated', () => saveDayLogs(key, previousEntries));
   };
 
   const handleDeleteEntry = () => {
     if (editingEntryIdx === null) return;
+    const previousEntries = entries;
     const next = entries.filter((_, i) => i !== editingEntryIdx);
     saveDayLogs(key, next);
     setEntryModalOpen(false);
-    showToast('Entry deleted');
+    showUndoToast('Entry deleted', () => saveDayLogs(key, previousEntries));
   };
 
   const handleDeleteEntryDirect = (index: number) => {
+    const previousEntries = entries;
     const next = entries.filter((_, i) => i !== index);
     saveDayLogs(key, next);
+    showUndoToast('Entry deleted', () => saveDayLogs(key, previousEntries));
   };
 
   const handleDuplicateEntry = (index: number) => {
@@ -115,10 +122,11 @@ export default function Home() {
 
   const handleDeleteQuickButton = () => {
     if (editingQuickIdx === null) return;
+    const previousButtons = data.quickButtons;
     const buttons = data.quickButtons.filter((_, i) => i !== editingQuickIdx);
     saveQuickButtons(buttons);
     setQuickModalOpen(false);
-    showToast('Button removed');
+    showUndoToast('Button removed', () => saveQuickButtons(previousButtons));
   };
 
   // ── Copy JSON ──

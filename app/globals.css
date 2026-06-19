@@ -916,6 +916,22 @@ body {
 .toast.show {
   opacity: 1;
 }
+.toast-action {
+  background: none;
+  border: none;
+  color: var(--teal-mid);
+  font-weight: 600;
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  pointer-events: auto;
+  text-decoration: underline;
+}
+.toast-action:hover {
+  color: #ffffff;
+}
 
 /* Mobile */
 @media (max-width: 600px) {
