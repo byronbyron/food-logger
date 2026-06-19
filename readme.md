@@ -1,64 +1,166 @@
-# Food Log
+# Food Log (Next.js + NextAuth + Google Drive)
 
-A lightweight, single-file food diary. No account, no server, no install — just open the HTML file in a browser and start logging.
+A daily food diary that signs in with Google, stores your data as a JSON file
+in your own Google Drive, and stays signed in across devices via NextAuth's
+server-side token refresh — solving the "logging in constantly" problem from
+the single-file version.
 
-## Features
+## What changed from the single-file version
 
-- **Daily logging** — log food entries with a time and free-text quantity (e.g. "1 bowl", "200g", "large")
-- **Quick-add buttons** — save your most common meals as one-tap shortcuts that pre-fill the form
-- **Day navigation** — browse backwards and forwards through your history using the arrow controls
-- **Export to CSV** — download your full log across all days as a spreadsheet-ready CSV file
-- **Light & dark mode** — automatically follows your system preference
-- **Works offline** — after the first load, no internet connection is needed (icons are cached by the browser)
+- **Real login persistence.** NextAuth uses the OAuth *authorization code*
+  flow (not the implicit flow), which gives the server a long-lived refresh
+  token. Your browser's access token is silently refreshed server-side
+  whenever it's close to expiring — you should rarely if ever need to
+  manually reconnect.
+- **Drive calls happen server-side.** Your Google access token never reaches
+  the browser. The frontend talks to `/api/logs`, and the server handles all
+  Drive API calls.
+- **Proper component structure.** Same UI and features (quick-add buttons,
+  meal tags, notes, search, 10-week history, entry edit/duplicate/delete,
+  Copy JSON) — now organised as React components instead of one HTML file.
+- **Drive scope:** `drive.file` — same as before. The app can only see files
+  it creates itself, and `food-log-data.json` will be visible in your normal
+  Drive view.
 
-## Getting started
+## Project structure
 
-1. Download `food-log.html`
-2. Open it in any modern browser (Chrome, Firefox, Safari, Edge)
-3. Start logging
+```
+app/
+  layout.tsx                      Root layout, loads Tabler icons
+  globals.css                     All styling (ported from the original)
+  page.tsx                        Main app — composes all components
+  api/
+    auth/[...nextauth]/route.ts   NextAuth handler
+    logs/route.ts                 GET/PUT — reads/writes your Drive file
 
-No installation, no dependencies to install, no build step.
+components/
+  Header.tsx                      Top bar: sign in/out, sync status, panel toggles
+  DriveBanner.tsx                 "Connect Google Drive" banner when signed out
+  DayNav.tsx                      Previous/next/today navigation
+  QuickAddButtons.tsx             Quick-add button row
+  QuickButtonModal.tsx            Create/edit/delete a quick-add button
+  LogForm.tsx                     The main entry form
+  MealSelector.tsx                Breakfast/Lunch/Dinner/Snack/Drinks selector
+  LogList.tsx                     Entries for the day, grouped by meal
+  EntryModal.tsx                  Edit an existing entry
+  SearchPanel.tsx                 Search all entries across all days
+  HistoryPanel.tsx                10-week calendar grid
+  Toast.tsx                       Bottom toast notifications
+  Providers.tsx                   NextAuth SessionProvider wrapper
 
-## How to use
+lib/
+  auth.ts                         NextAuth config — Google provider, token refresh
+  drive.ts                        Server-side Google Drive API helper functions
+  useFoodLog.ts                   Client hook: loads/saves data, debounces writes
+  date.ts                         Date formatting/parsing helpers
 
-### Logging food
+types/
+  index.ts                        LogEntry, QuickButton, DriveData types
+  next-auth.d.ts                  Type augmentation for session.accessToken
+```
 
-Fill in the **Time**, **Food**, and **Quantity** fields and click **Log entry** (or press Enter). Time defaults to the current time if left blank. Entries are sorted chronologically automatically.
+## Setup
 
-To remove an entry, hover over it and click the × button that appears on the right.
+### 1. Install dependencies
 
-### Quick-add buttons
+```bash
+npm install
+```
 
-Click **New button** to save a common food item. Give it a label (shown on the button), a food name, and a default quantity. Clicking the button later pre-fills the form — you can adjust anything before logging.
+### 2. Create a Google OAuth credential (authorization code flow)
 
-To edit or delete a button, hover over it and click the pencil icon.
+This is a **different credential setup** from the single-file version —
+that one used the implicit flow (`response_type=token`), this one uses the
+standard server-side flow with a client secret.
 
-### Navigating days
+1. Go to [console.cloud.google.com](https://console.cloud.google.com) and
+   open your existing project (or the one you used for the single-file app
+   — you can reuse it).
+2. Go to **APIs & Services → Credentials**.
+3. You can reuse your existing OAuth 2.0 Client ID, or create a new one —
+   either way, you need the **Client Secret** this time too (the implicit
+   flow didn't use one).
+4. Under **Authorized JavaScript origins**, add:
+   - `http://localhost:3000` (for local development)
+   - your production Vercel URL, e.g. `https://food-log.vercel.app`
+5. Under **Authorized redirect URIs**, add:
+   - `http://localhost:3000/api/auth/callback/google`
+   - `https://food-log.vercel.app/api/auth/callback/google` (your real domain)
+6. Make sure **APIs & Services → OAuth consent screen → Test users** still
+   includes your Google account (same as before, since the app is in
+   Testing mode).
 
-Use the **‹** and **›** arrows to move between days, or click **Today** to jump back to the current date.
+### 3. Environment variables
 
-### Exporting your data
+Copy the example file and fill it in:
 
-Click **Export CSV** in the top-right corner to download a `food-log.csv` file containing all entries across every day, with columns for Date, Time, Food, and Quantity.
+```bash
+cp .env.local.example .env.local
+```
 
-## Data storage
+```
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+NEXTAUTH_SECRET=<generate with: openssl rand -base64 32>
+NEXTAUTH_URL=http://localhost:3000
+DRIVE_FILE_NAME=food-log-data.json
+```
 
-All data is saved to your browser's `localStorage`. This means:
+### 4. Run locally
 
-- Data is stored locally on your device — nothing is sent anywhere
-- Data persists between sessions as long as you use the same browser on the same device
-- Clearing your browser's site data will erase your log
-- Data does not sync between devices or browsers
+```bash
+npm run dev
+```
 
-If you want to back up your data, use the **Export CSV** button regularly.
+Open [http://localhost:3000](http://localhost:3000), click **Connect Drive**,
+sign in, and approve access.
 
-## Browser support
+### 5. Deploy to Vercel
 
-Works in any modern browser. Requires an internet connection on first load to fetch the icon font from jsDelivr CDN. After that, icons are cached and the app works fully offline.
+```bash
+vercel
+```
 
-| Browser | Support |
-|---------|---------|
-| Chrome / Edge | ✓ |
-| Firefox | ✓ |
-| Safari | ✓ |
-| Mobile (iOS / Android) | ✓ |
+Or connect the GitHub repo in the Vercel dashboard. Either way, add the same
+environment variables in **Project Settings → Environment Variables**:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL` — set this to your production URL, e.g.
+  `https://food-log.vercel.app`
+- `DRIVE_FILE_NAME` — optional, defaults to `food-log-data.json`
+
+After deploying, go back to Google Cloud Console and make sure your
+production domain is in both the **Authorized JavaScript origins** and
+**Authorized redirect URIs** lists (step 2 above).
+
+## How the login persistence actually works
+
+1. On first sign-in, Google returns both an **access token** (short-lived,
+   ~1 hour) and a **refresh token** (long-lived, doesn't expire under normal
+   use).
+2. NextAuth stores both inside an encrypted JWT session cookie — the refresh
+   token never leaves the server.
+3. Every time the app calls `getSession()` server-side, NextAuth checks if
+   the access token is expired or close to it. If so, it automatically
+   exchanges the refresh token for a new access token before continuing —
+   this happens transparently, with no popups or redirects.
+4. You'll only be asked to sign in again if the refresh token itself is
+   revoked (e.g. you remove the app's access from your Google Account
+   settings, or don't use the app for an extended period — Google can expire
+   long-unused refresh tokens).
+
+## Migrating your existing data
+
+Your existing `food-log-data.json` file from the single-file app is already
+in your Google Drive (assuming you completed that setup). Once you sign in
+to this new app with the same Google account, it'll find and use that exact
+same file — no migration needed.
+
+## Notes on the Testing/Production app status
+
+Your Google Cloud OAuth app is likely still in **Testing** mode, which means
+only accounts you've explicitly added as test users can sign in. This is
+fine for personal use. If you ever want anyone else to be able to sign in,
+you'd need to submit the app for Google's verification process.

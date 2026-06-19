@@ -1,0 +1,221 @@
+'use client';
+
+import { useRef, useState } from 'react';
+import { useFoodLog } from '@/lib/useFoodLog';
+import { dateKey, nowTime } from '@/lib/date';
+import { LogEntry, QuickButton } from '@/types';
+
+import { Header } from '@/components/Header';
+import { DriveBanner } from '@/components/DriveBanner';
+import { DayNav } from '@/components/DayNav';
+import { QuickAddButtons } from '@/components/QuickAddButtons';
+import { QuickButtonModal } from '@/components/QuickButtonModal';
+import { LogForm } from '@/components/LogForm';
+import { LogList } from '@/components/LogList';
+import { EntryModal } from '@/components/EntryModal';
+import { SearchPanel } from '@/components/SearchPanel';
+import { HistoryPanel } from '@/components/HistoryPanel';
+import { Toast, ToastHandle } from '@/components/Toast';
+
+export default function Home() {
+  const { data, syncState, isAuthenticated, getDayLogs, saveDayLogs, saveQuickButtons } = useFoodLog();
+
+  const [currentDate, setCurrentDate] = useState(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [jsonCopied, setJsonCopied] = useState(false);
+
+  const [quickModalOpen, setQuickModalOpen] = useState(false);
+  const [editingQuickIdx, setEditingQuickIdx] = useState<number | null>(null);
+
+  const [entryModalOpen, setEntryModalOpen] = useState(false);
+  const [editingEntryIdx, setEditingEntryIdx] = useState<number | null>(null);
+
+  const [prefill, setPrefill] = useState<{ food: string; qty: string } | null>(null);
+
+  const toastRef = useRef<ToastHandle>(null);
+  const showToast = (msg: string) => toastRef.current?.show(msg);
+
+  const key = dateKey(currentDate);
+  const entries = getDayLogs(key);
+
+  // ── Log form ──
+  const handleLog = (entry: LogEntry) => {
+    const next = [...entries, entry].sort((a, b) => a.time.localeCompare(b.time));
+    saveDayLogs(key, next);
+  };
+
+  // ── Entry actions ──
+  const handleEditEntry = (index: number) => {
+    setEditingEntryIdx(index);
+    setEntryModalOpen(true);
+  };
+
+  const handleSaveEntry = (updated: LogEntry) => {
+    if (editingEntryIdx === null) return;
+    const next = [...entries];
+    next[editingEntryIdx] = updated;
+    next.sort((a, b) => a.time.localeCompare(b.time));
+    saveDayLogs(key, next);
+    setEntryModalOpen(false);
+    showToast('Entry updated');
+  };
+
+  const handleDeleteEntry = () => {
+    if (editingEntryIdx === null) return;
+    const next = entries.filter((_, i) => i !== editingEntryIdx);
+    saveDayLogs(key, next);
+    setEntryModalOpen(false);
+    showToast('Entry deleted');
+  };
+
+  const handleDeleteEntryDirect = (index: number) => {
+    const next = entries.filter((_, i) => i !== index);
+    saveDayLogs(key, next);
+  };
+
+  const handleDuplicateEntry = (index: number) => {
+    const copy = { ...entries[index], time: nowTime() };
+    const next = [...entries, copy].sort((a, b) => a.time.localeCompare(b.time));
+    saveDayLogs(key, next);
+    showToast('Entry duplicated');
+  };
+
+  // ── Quick buttons ──
+  const handleUseQuickButton = (button: QuickButton) => {
+    setPrefill({ food: button.food, qty: button.qty });
+  };
+
+  const handleNewQuickButton = () => {
+    setEditingQuickIdx(null);
+    setQuickModalOpen(true);
+  };
+
+  const handleEditQuickButton = (index: number) => {
+    setEditingQuickIdx(index);
+    setQuickModalOpen(true);
+  };
+
+  const handleSaveQuickButton = (button: QuickButton) => {
+    const buttons = [...data.quickButtons];
+    if (editingQuickIdx !== null) {
+      buttons[editingQuickIdx] = button;
+    } else {
+      buttons.push(button);
+    }
+    saveQuickButtons(buttons);
+    setQuickModalOpen(false);
+    showToast(editingQuickIdx !== null ? 'Button updated' : 'Button added');
+  };
+
+  const handleDeleteQuickButton = () => {
+    if (editingQuickIdx === null) return;
+    const buttons = data.quickButtons.filter((_, i) => i !== editingQuickIdx);
+    saveQuickButtons(buttons);
+    setQuickModalOpen(false);
+    showToast('Button removed');
+  };
+
+  // ── Copy JSON ──
+  const handleCopyJson = async () => {
+    if (entries.length === 0) {
+      showToast('Nothing logged for this day');
+      return;
+    }
+    const json = JSON.stringify({ date: key, entries }, null, 2);
+    try {
+      await navigator.clipboard.writeText(json);
+      setJsonCopied(true);
+      showToast('Day log copied as JSON');
+      setTimeout(() => setJsonCopied(false), 2000);
+    } catch {
+      showToast('Copy failed — try again');
+    }
+  };
+
+  // ── Panel toggles (mutually exclusive) ──
+  const toggleSearch = () => {
+    setSearchOpen((v) => !v);
+    setHistoryOpen(false);
+  };
+  const toggleHistory = () => {
+    setHistoryOpen((v) => !v);
+    setSearchOpen(false);
+  };
+
+  const jumpToDay = (date: Date) => {
+    setCurrentDate(date);
+    setSearchOpen(false);
+    setHistoryOpen(false);
+  };
+
+  return (
+    <div className="app">
+      <Header
+        syncState={syncState}
+        searchOpen={searchOpen}
+        historyOpen={historyOpen}
+        onToggleSearch={toggleSearch}
+        onToggleHistory={toggleHistory}
+        onCopyJson={handleCopyJson}
+        jsonCopied={jsonCopied}
+      />
+
+      {!isAuthenticated && <DriveBanner />}
+
+      <SearchPanel open={searchOpen} data={data} onJumpToDay={jumpToDay} />
+      <HistoryPanel open={historyOpen} data={data} currentDate={currentDate} onSelectDay={jumpToDay} />
+
+      <DayNav currentDate={currentDate} onChange={setCurrentDate} />
+
+      <QuickAddButtons
+        buttons={data.quickButtons}
+        onUse={handleUseQuickButton}
+        onEdit={handleEditQuickButton}
+        onNew={handleNewQuickButton}
+      />
+
+      <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
+
+      <div className="log-section">
+        <div className="log-header">
+          <span className="eyebrow">{dateKey(currentDate) === dateKey(new Date()) ? "Today's log" : 'Log'}</span>
+          {entries.length > 0 && (
+            <span className="count-pill">
+              {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
+            </span>
+          )}
+        </div>
+        <LogList
+          entries={entries}
+          onEdit={handleEditEntry}
+          onDuplicate={handleDuplicateEntry}
+          onDelete={handleDeleteEntryDirect}
+        />
+      </div>
+
+      <QuickButtonModal
+        open={quickModalOpen}
+        editing={editingQuickIdx !== null ? data.quickButtons[editingQuickIdx] : null}
+        onClose={() => setQuickModalOpen(false)}
+        onSave={handleSaveQuickButton}
+        onDelete={handleDeleteQuickButton}
+      />
+
+      <EntryModal
+        open={entryModalOpen}
+        entry={editingEntryIdx !== null ? entries[editingEntryIdx] : null}
+        onClose={() => setEntryModalOpen(false)}
+        onSave={handleSaveEntry}
+        onDelete={handleDeleteEntry}
+      />
+
+      <Toast ref={toastRef} />
+    </div>
+  );
+}
