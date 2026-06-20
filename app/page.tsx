@@ -176,35 +176,43 @@ export default function Home() {
 
       {!isAuthenticated && <DriveBanner />}
 
-      <SearchPanel open={searchOpen} data={data} onJumpToDay={jumpToDay} />
-      <HistoryPanel open={historyOpen} data={data} currentDate={currentDate} onSelectDay={jumpToDay} />
+      <div className="layout">
+        <div className="layout-left">
+          <SearchPanel open={searchOpen} data={data} onJumpToDay={jumpToDay} />
+          <HistoryPanel open={historyOpen} data={data} currentDate={currentDate} onSelectDay={jumpToDay} />
 
-      <DayNav currentDate={currentDate} onChange={setCurrentDate} />
+          <DayNav currentDate={currentDate} onChange={setCurrentDate} />
 
-      <QuickAddButtons
-        buttons={data.quickButtons}
-        onUse={handleUseQuickButton}
-        onEdit={handleEditQuickButton}
-        onNew={handleNewQuickButton}
-      />
+          <QuickAddButtons
+            buttons={data.quickButtons}
+            onUse={handleUseQuickButton}
+            onEdit={handleEditQuickButton}
+            onNew={handleNewQuickButton}
+          />
 
-      <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
-
-      <div className="log-section">
-        <div className="log-header">
-          <span className="eyebrow">{dateKey(currentDate) === dateKey(new Date()) ? "Today's log" : 'Log'}</span>
-          {entries.length > 0 && (
-            <span className="count-pill">
-              {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
-            </span>
-          )}
+          <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
         </div>
-        <LogList
-          entries={entries}
-          onEdit={handleEditEntry}
-          onDuplicate={handleDuplicateEntry}
-          onDelete={handleDeleteEntryDirect}
-        />
+
+        <div className="layout-right">
+          <div className="log-section">
+            <div className="log-header">
+              <span className="eyebrow">{dateKey(currentDate) === dateKey(new Date()) ? "Today's log" : 'Log'}</span>
+              {entries.length > 0 && (
+                <span className="count-pill">
+                  {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
+                </span>
+              )}
+            </div>
+            <div className="log-scroll">
+              <LogList
+                entries={entries}
+                onEdit={handleEditEntry}
+                onDuplicate={handleDuplicateEntry}
+                onDelete={handleDeleteEntryDirect}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <QuickButtonModal

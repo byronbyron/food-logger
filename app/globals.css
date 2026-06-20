@@ -80,6 +80,71 @@ body {
   padding: 1.75rem;
 }
 
+/* Two-column layout on wider screens (e.g. laptop displays).
+   Below 900px this falls back to a single stacked column. */
+.layout {
+  display: block;
+}
+.layout-left,
+.layout-right {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  body {
+    /* Tighter vertical padding so more of the log is visible above the
+       fold, accounting for browser chrome (tabs/address bar) eating into
+       the viewport on a 1440x900-class laptop screen. */
+    padding: 1.25rem 1rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .app {
+    max-width: 1080px;
+    width: 100%;
+    /* Cap height to the viewport (minus rough allowance for browser
+       chrome + body padding) so the right column can scroll internally
+       instead of the whole page growing taller than the screen. */
+    max-height: calc(100vh - 2.5rem);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1.75rem;
+    flex: 1;
+    min-height: 0; /* required for child overflow to work inside a flex column */
+  }
+
+  .layout-left {
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+
+  .layout-right {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .log-section {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .log-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+}
+
 /* Header */
 .app-header {
   display: flex;
@@ -919,7 +984,7 @@ body {
 .toast-action {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--teal-mid);
   font-weight: 600;
   font-size: 13px;
   font-family: var(--font);
