@@ -178,19 +178,18 @@ export default function Home() {
 
       <div className="layout">
         <div className="layout-left">
-          <SearchPanel open={searchOpen} data={data} onJumpToDay={jumpToDay} />
-          <HistoryPanel open={historyOpen} data={data} currentDate={currentDate} onSelectDay={jumpToDay} />
+          <div className="layout-left-sticky">
+            <DayNav currentDate={currentDate} onChange={setCurrentDate} />
 
-          <DayNav currentDate={currentDate} onChange={setCurrentDate} />
+            <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
 
-          <QuickAddButtons
-            buttons={data.quickButtons}
-            onUse={handleUseQuickButton}
-            onEdit={handleEditQuickButton}
-            onNew={handleNewQuickButton}
-          />
-
-          <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
+            <QuickAddButtons
+              buttons={data.quickButtons}
+              onUse={handleUseQuickButton}
+              onEdit={handleEditQuickButton}
+              onNew={handleNewQuickButton}
+            />
+          </div>
         </div>
 
         <div className="layout-right">
@@ -214,6 +213,33 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {(searchOpen || historyOpen) && (
+        <div
+          className="side-panel-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setSearchOpen(false);
+              setHistoryOpen(false);
+            }
+          }}
+        >
+          <div className="side-panel">
+            <button
+              className="side-panel-close"
+              onClick={() => {
+                setSearchOpen(false);
+                setHistoryOpen(false);
+              }}
+              aria-label="Close panel"
+            >
+              <i className="ti ti-x" aria-hidden="true" />
+            </button>
+            <SearchPanel open={searchOpen} data={data} onJumpToDay={jumpToDay} />
+            <HistoryPanel open={historyOpen} data={data} currentDate={currentDate} onSelectDay={jumpToDay} />
+          </div>
+        </div>
+      )}
 
       <QuickButtonModal
         open={quickModalOpen}

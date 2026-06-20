@@ -114,15 +114,23 @@ body {
 
   .layout {
     display: grid;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 420px 1fr;
     gap: 1.75rem;
     flex: 1;
     min-height: 0; /* required for child overflow to work inside a flex column */
   }
 
+  /* Left column no longer scrolls as a whole — the day nav, form, and
+     quick-add buttons stay fixed in place while only the log list (right
+     column) scrolls. This keeps the primary input controls always
+     reachable without hunting for them after scrolling. */
   .layout-left {
-    overflow-y: auto;
-    padding-right: 0.25rem;
+    min-height: 0;
+  }
+
+  .layout-left-sticky {
+    position: sticky;
+    top: 0;
   }
 
   .layout-right {
@@ -142,6 +150,69 @@ body {
     flex: 1;
     overflow-y: auto;
     padding-right: 0.25rem;
+  }
+
+  /* The left column is a fixed 420px regardless of overall screen width,
+     so the meal selector + notes need to stack rather than split into
+     two cramped halves the way they do on a genuinely wide single-column
+     layout. */
+  .layout-left .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Search / History slide-out panel.
+   Used at all screen sizes — opening either no longer shifts the rest
+   of the layout, since both panels now render in an overlay rather
+   than inline above the day nav. */
+.side-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 150;
+  display: flex;
+  justify-content: flex-end;
+}
+.side-panel {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  background: var(--bg);
+  border-left: 0.5px solid var(--border-md);
+  padding: 1.75rem 1.5rem;
+  overflow-y: auto;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+}
+.side-panel-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: none;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-md);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+.side-panel-close:hover {
+  background: var(--bg-secondary);
+  color: var(--text);
+}
+.side-panel .search-panel,
+.side-panel .history-panel {
+  margin-bottom: 0;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 600px) {
+  .side-panel {
+    max-width: 100%;
   }
 }
 
