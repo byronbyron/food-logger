@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFoodLog } from '@/lib/useFoodLog';
 import { dateKey, nowTime } from '@/lib/date';
 import { LogEntry, QuickButton } from '@/types';
@@ -161,6 +161,19 @@ export default function Home() {
     setSearchOpen(false);
     setHistoryOpen(false);
   };
+
+  // Close the search/history slide-out on Escape
+  useEffect(() => {
+    if (!searchOpen && !historyOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+        setHistoryOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [searchOpen, historyOpen]);
 
   return (
     <div className="app">
