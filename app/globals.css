@@ -919,7 +919,7 @@ body {
 .toast-action {
   background: none;
   border: none;
-  color: var(--teal-mid);
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 600;
   font-size: 13px;
   font-family: var(--font);
