@@ -1055,7 +1055,7 @@ body {
 .toast-action {
   background: none;
   border: none;
-  color: var(--teal-mid);
+  color: #ffffff;
   font-weight: 600;
   font-size: 13px;
   font-family: var(--font);
@@ -1067,6 +1067,7 @@ body {
 }
 .toast-action:hover {
   color: #ffffff;
+  opacity: 0.8;
 }
 
 /* Mobile */

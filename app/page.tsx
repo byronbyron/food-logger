@@ -194,14 +194,14 @@ export default function Home() {
           <div className="layout-left-sticky">
             <DayNav currentDate={currentDate} onChange={setCurrentDate} />
 
-            <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
-
             <QuickAddButtons
               buttons={data.quickButtons}
               onUse={handleUseQuickButton}
               onEdit={handleEditQuickButton}
               onNew={handleNewQuickButton}
             />
+
+            <LogForm onLog={handleLog} prefill={prefill} onPrefillConsumed={() => setPrefill(null)} />
           </div>
         </div>
 
