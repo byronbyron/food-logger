@@ -5,6 +5,8 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Food log',
   description: 'A simple daily food diary',
+  manifest: '/manifest.json',
+  themeColor: '#1D9E75',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
